@@ -1,1 +1,16 @@
-
+[
+  {
+    "tourId": "tate-mcrae-miss-possessive-tour",
+    "tourName": "Miss Possessive Tour",
+    "artist": "Tate McRae",
+    "year": 2026,
+    "startTimeLocal": "7:30 PM",
+    "notes": "Setlist may vary by date.",
+    "tourWebsite": "https://www.tatemcrae.com/",
+    "setlist": [
+      { "title": "greedy" },
+      { "title": "exes" },
+      { "title": "you broke me first" }
+    ]
+  }
+]
