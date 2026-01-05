@@ -162,7 +162,7 @@ a{ color:inherit; text-decoration:none; }
   box-shadow:var(--shadow2);
 }
 
-/* Search dropdown (Festivals-like) */
+/* Search dropdown */
 .search-results{
   margin-top:10px;
   background:#fff;
@@ -270,7 +270,6 @@ a{ color:inherit; text-decoration:none; }
   gap:14px;
 }
 
-/* Festivals “section-card” language */
 .info-card{
   background:var(--card);
   border:1px solid var(--line);
@@ -304,7 +303,7 @@ a{ color:inherit; text-decoration:none; }
 .section-body{ padding:14px 16px; }
 
 /* ============================================================
-   Library grid (match Festivals grid/cards)
+   Library grid
    ============================================================ */
 
 .grid-head{
@@ -324,7 +323,6 @@ a{ color:inherit; text-decoration:none; }
   gap:12px;
 }
 
-/* Your JS creates .browse-item — make it look like Festivals .card */
 .browse-item{
   background:var(--card);
   border:1px solid var(--line);
@@ -387,7 +385,7 @@ a{ color:inherit; text-decoration:none; }
 }
 
 /* ============================================================
-   Setlist accordion
+   Setlist accordion — UNIFORM TYPOGRAPHY FIX
    ============================================================ */
 
 .setlist-list{
@@ -411,6 +409,9 @@ a{ color:inherit; text-decoration:none; }
   gap:10px;
   cursor:pointer;
   text-align:left;
+
+  /* Force Inter everywhere */
+  font-family: var(--font);
 }
 
 .song-row-header:hover{ background:#F5F7FB; }
@@ -419,33 +420,45 @@ a{ color:inherit; text-decoration:none; }
   width:24px;
   flex:0 0 24px;
   text-align:center;
-  font-size:var(--fs-12);
+  font-size:var(--fs-13);
   color:var(--muted);
-  font-weight:800;
+  font-weight:700;
+  font-family: var(--font);
 }
 
 .song-title{
-  font-weight:800;
-  color:var(--ink);
   flex:1 1 auto;
   min-width:0;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+
+  font-family: var(--font);
+  font-size: var(--fs-14);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.2;
+  color: var(--ink);
 }
 
 .song-meta{
-  color:var(--muted);
-  font-size:var(--fs-12);
-  white-space:nowrap;
   flex:0 0 auto;
+  white-space:nowrap;
+
+  font-family: var(--font);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  color: var(--muted);
 }
 
 .song-chevron{
-  color:var(--muted);
-  font-size:var(--fs-12);
   margin-left:auto;
   flex:0 0 auto;
+
+  font-family: var(--font);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  color: var(--muted);
 }
 
 .song-dropdown{
@@ -463,6 +476,7 @@ a{ color:inherit; text-decoration:none; }
   gap:10px;
 }
 
+/* Buttons — make BOTH Apple + Spotify LIGHT */
 .song-link-btn{
   display:inline-flex;
   align-items:center;
@@ -476,6 +490,11 @@ a{ color:inherit; text-decoration:none; }
   font-weight:600;
   box-shadow:var(--shadow2);
   transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+
+  /* iOS tap feel */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
 }
 
 .song-link-btn:hover{
@@ -484,12 +503,14 @@ a{ color:inherit; text-decoration:none; }
   box-shadow:var(--shadow);
 }
 
+/* Remove dark primary styling entirely (Spotify matches Apple) */
 .song-link-btn.primary{
-  background:var(--accent);
-  color:#fff;
-  border-color:var(--accent);
+  background:#fff;
+  color:var(--ink);
+  border-color:var(--line);
 }
 
+/* Disabled state */
 .song-link-btn[aria-disabled="true"]{
   opacity:.55;
   cursor:not-allowed;
@@ -497,52 +518,8 @@ a{ color:inherit; text-decoration:none; }
   box-shadow:var(--shadow2);
 }
 
-.song-status{
-  margin-top:10px;
-  font-size:var(--fs-13);
-  color:var(--muted);
-  line-height:1.35;
-}
-
-/* Empty setlist state */
-.setlist-empty{
-  padding:16px;
-  border-radius:16px;
-  background:#fff;
-  border:1px solid var(--line);
-  box-shadow:var(--shadow2);
-}
-
-.setlist-empty-title{
-  font-size:var(--fs-16);
-  font-weight:800;
-  margin-bottom:6px;
-}
-
-.setlist-empty-sub{
-  font-size:var(--fs-14);
-  color:var(--muted);
-  line-height:1.45;
-}
-
-/* Buttons */
-.primary-btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:999px;
-  padding:10px 14px;
-  font-size:var(--fs-13);
-  border:1px solid var(--line);
-  cursor:pointer;
-  background:var(--accent);
-  color:#fff;
-  border-color:var(--accent);
-  box-shadow:var(--shadow2);
-}
-
 /* ============================================================
-   Modal (Festivals)
+   Modal
    ============================================================ */
 
 .modal[hidden]{ display:none; }
@@ -588,11 +565,26 @@ a{ color:inherit; text-decoration:none; }
   margin-top:14px;
 }
 
+.primary-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  padding:10px 14px;
+  font-size:var(--fs-13);
+  border:1px solid var(--line);
+  cursor:pointer;
+  background:var(--accent);
+  color:#fff;
+  border-color:var(--accent);
+  box-shadow:var(--shadow2);
+}
+
 .bullets{ margin:0; padding-left:18px; }
 .bullets li{ margin:8px 0; }
 
 /* ============================================================
-   Responsive (match Festivals breakpoints)
+   Responsive
    ============================================================ */
 
 @media (max-width: 880px){
