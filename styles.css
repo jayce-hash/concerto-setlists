@@ -633,14 +633,16 @@ a{ color:inherit; text-decoration:none; }
 .song-dropdown{
   pointer-events: auto;
 }
-.song-row-header{
-  pointer-events: none;
-}
-.song-row-header *{
-  pointer-events: none;
-}
 
 /* Re-enable pointer events on the buttons inside the dropdown */
 .song-dropdown .song-link-btn{
   pointer-events: auto;
+}
+
+/* iOS WebView tap fix (safe) */
+.song-link-btn{
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
