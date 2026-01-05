@@ -270,13 +270,7 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
   try {
     statusEl.textContent = "Searching…";
 
-    // 1) Spotify search -> spotifyUrl
-    const spotify = await apiSpotifySearch({ artist, title });
-
-    // 2) song.link -> apple + spotify canonical links
-    const songlink = spotify?.spotifyUrl
-      ? await apiSonglink(spotify.spotifyUrl)
-      : null;
+const songlink = await apiSonglinkBySearch({ artist, title });
 
     // 3) lyrics (no-key service)
     const lyrics = await apiLyrics({ artist, title });
@@ -347,11 +341,10 @@ async function apiSpotifySearch({ artist, title }) {
   return res.json(); // { spotifyUrl, trackName, artistName }
 }
 
-async function apiSonglink(spotifyUrl) {
-  const url = `/.netlify/functions/songlink?url=${encodeURIComponent(spotifyUrl)}`;
+async function apiSonglinkBySearch({ artist, title }) {
+  const url = `/.netlify/functions/songlink?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error("Songlink lookup failed");
-  return res.json(); // { spotifyUrl, appleUrl }
+  return res.json();
 }
 
 async function apiLyrics({ artist, title }) {
