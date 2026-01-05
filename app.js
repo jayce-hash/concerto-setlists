@@ -257,10 +257,15 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
   const appleBtn  = dropdown.querySelector('[data-role="apple"]');
   const spotifyBtn= dropdown.querySelector('[data-role="spotify"]');
 
+  // Prevent the accordion from “competing” with taps on iOS
+  dropdown.querySelectorAll(".song-link-btn").forEach((a) => {
+    a.addEventListener("click", (e) => e.stopPropagation());
+    a.addEventListener("touchstart", (e) => e.stopPropagation(), { passive: true });
+  });
+
   const key = cacheKey(artist, title);
   const cached = cache[key];
 
-  // If cached, apply immediately
   if (cached?.spotifyUrl || cached?.appleUrl || cached?.lyricsUrl) {
     applyLinks({ cached, statusEl, lyricsBtn, appleBtn, spotifyBtn });
     statusEl.textContent = "Links ready.";
@@ -269,14 +274,25 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
 
   try {
     statusEl.textContent = "Searching…";
+    statusEl.style.color = "var(--muted)";
 
-const songlink = await apiSonglinkBySearch({ artist, title });
+    // Run both calls in parallel + timeout safety
+    const withTimeout = (promise, ms) =>
+      Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Request timed out")), ms))
+      ]);
 
-    // 3) lyrics (no-key service)
-    const lyrics = await apiLyrics({ artist, title });
+    const [songlink, lyrics] = await withTimeout(
+      Promise.all([
+        apiSonglinkBySearch({ artist, title }),
+        apiLyrics({ artist, title })
+      ]),
+      8000
+    );
 
     const payload = {
-      spotifyUrl: songlink?.spotifyUrl || spotify?.spotifyUrl || null,
+      spotifyUrl: songlink?.spotifyUrl || null,
       appleUrl: songlink?.appleUrl || null,
       lyricsUrl: lyrics?.lyricsUrl || null,
       fetchedAt: Date.now()
@@ -289,7 +305,7 @@ const songlink = await apiSonglinkBySearch({ artist, title });
     statusEl.textContent = "Links ready.";
   } catch (err) {
     console.error(err);
-    statusEl.textContent = "Couldn’t auto-generate links for this song. Try again later.";
+    statusEl.textContent = "Couldn’t generate links. Try again.";
     statusEl.style.color = "var(--muted)";
   }
 }
@@ -334,12 +350,6 @@ function applyLinks({ cached, statusEl, lyricsBtn, appleBtn, spotifyBtn }) {
 // ------------------------------
 // Netlify function API calls
 // ------------------------------
-async function apiSpotifySearch({ artist, title }) {
-  const url = `/.netlify/functions/spotify-search?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Spotify search failed");
-  return res.json(); // { spotifyUrl, trackName, artistName }
-}
 
 async function apiSonglinkBySearch({ artist, title }) {
   const url = `/.netlify/functions/songlink?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`;
