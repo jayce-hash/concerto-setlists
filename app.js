@@ -140,7 +140,7 @@ function selectTour(tourId) {
 
   el("tourName").textContent = tour.tourName;
   el("tourArtist").textContent = tour.artist;
-  el("tourMeta").textContent = [tour.year, tour.notes].filter(Boolean).join(" · ");
+  el("tourMeta").textContent = tour.notes || "";
 
   renderTourInfo(tour);
   renderSetlist(tour);
@@ -161,33 +161,24 @@ function selectTour(tourId) {
 function renderTourInfo(t) {
   const grid = el("tourInfoGrid");
 
-  // Always reset the grid
-  const rows = [
-    { label: "Tour Website", value: t.tourWebsite ? "Open" : "Not available" },
-    { label: "Start Time (Local)", value: t.startTimeLocal || "—" }
-    // NOTE: Year removed per your new UI preference
-  ];
-
-  grid.innerHTML = rows.map((r) => `
+  grid.innerHTML = `
     <div class="tour-info-row">
-      <div class="tour-info-label">${escapeHtml(r.label)}</div>
-      <div class="tour-info-value">${escapeHtml(String(r.value))}</div>
+      <div class="tour-info-label">Start Time (Local)</div>
+      <div class="tour-info-value">${t.startTimeLocal || "—"}</div>
     </div>
-  `).join("");
+  `;
 
-  // Remove any previous actions row (prevents stacking)
   const body = grid.closest(".section-body");
   if (!body) return;
 
   const existing = body.querySelector(".tour-info-actions");
   if (existing) existing.remove();
 
-  // Add button only if website exists
   if (t.tourWebsite) {
     const actions = document.createElement("div");
     actions.className = "tour-info-actions";
     actions.innerHTML = `
-      <a class="show-link-btn" href="${t.tourWebsite}" target="_blank" rel="noopener">
+      <a class="song-link-btn" href="${t.tourWebsite}" target="_blank" rel="noopener">
         Tour Website
       </a>
     `;
