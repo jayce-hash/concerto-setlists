@@ -608,3 +608,39 @@ a{ color:inherit; text-decoration:none; }
   .brand-logo{ width:92%; max-width:340px; }
   .feature-title{ font-size:26px; }
 }
+
+/* ===============================
+   Fix iOS / BuildFire tap priority
+   =============================== */
+
+/* Force links to behave like buttons on iOS */
+.song-link-btn{
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+/* Ensure anchors get pointer priority */
+.song-link-btn a,
+.song-link-btn:link,
+.song-link-btn:visited{
+  pointer-events: auto;
+}
+
+/* Prevent the accordion header from stealing taps */
+.song-dropdown{
+  pointer-events: auto;
+}
+.song-row-header{
+  pointer-events: none;
+}
+.song-row-header *{
+  pointer-events: none;
+}
+
+/* Re-enable pointer events on the buttons inside the dropdown */
+.song-dropdown .song-link-btn{
+  pointer-events: auto;
+}
