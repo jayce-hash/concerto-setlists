@@ -8,27 +8,34 @@
   <!-- Fonts (match Festivals pairing) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap"
-    rel="stylesheet"
-  >
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="./styles.css" />
 </head>
 
 <body>
-  <div class="page">
-    <header class="page-header">
-      <div class="page-header-inner">
-        <img
-          src="./images/brand/concerto-logo.png"
-          alt="Concerto"
-          class="brand-logo"
-        />
+  <header class="page-header">
+    <div class="page-header-inner">
+      <img
+        src="./images/brand/concerto-logo.png"
+        alt="Concerto - From the Concert to the City"
+        class="brand-logo"
+      />
 
-        <h1 class="feature-title">Setlists & Tour Info</h1>
-        <p class="tagline">Pick a tour. Get the setlist—instantly.</p>
+      <h1 class="feature-title">Setlists & Tour Info</h1>
+      <p class="tagline">Pick a tour. Get the setlist—instantly.</p>
 
-        <div class="search-wrapper">
+      <div class="header-actions">
+        <a class="btn-ghost" href="#" id="openHelp">How it works</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HERO = search row (Festivals-style) -->
+    <section class="hero">
+      <div class="search-row">
+        <div class="search">
           <input
             id="tourSearch"
             type="search"
@@ -36,88 +43,113 @@
             autocomplete="off"
           />
           <button id="clearSearchBtn" class="icon-btn" title="Clear" aria-label="Clear">×</button>
-          <div id="searchResults" class="search-results"></div>
         </div>
       </div>
-    </header>
 
-    <main class="layout">
-      <section id="infoPanel" class="info-panel info-panel--empty">
-        <div class="info-empty">
-          <h2>Browse setlists</h2>
-          <p>
-            Search above or pick a tour below. We’ll auto-generate Apple Music + Spotify links
-            for each song (no more manual link hunting).
-          </p>
-        </div>
+      <!-- Keep your dropdown element (JS uses it) -->
+      <div id="searchResults" class="search-results"></div>
+    </section>
 
-        <div class="info-content" hidden>
-          <button id="backToLibrary" class="back-btn" type="button" aria-label="Back to Tour Library">
-            ← Tour Library
-          </button>
+    <!-- Main panel -->
+    <section id="infoPanel" class="info-panel info-panel--empty">
 
-          <header class="info-header">
-            <div>
-              <h2 id="tourName"></h2>
-              <p id="tourArtist" class="tour-artist-line"></p>
-              <p id="tourMeta" class="tour-meta-line"></p>
+      <!-- Empty state -->
+      <div class="info-empty">
+        <h2>Browse tours</h2>
+        <p>
+          Search above or pick one below. When a setlist is available, links generate automatically
+          for Apple Music, Spotify, and lyrics.
+        </p>
+      </div>
+
+      <!-- Detail mode -->
+      <div class="info-content" hidden>
+        <button id="backToLibrary" class="back-btn" type="button" aria-label="Back to Tour Library">
+          ← Tour Library
+        </button>
+
+        <header class="info-header">
+          <div>
+            <h2 id="tourName"></h2>
+            <p id="tourArtist" class="tour-artist-line"></p>
+            <p id="tourMeta" class="tour-meta-line"></p>
+          </div>
+        </header>
+
+        <div class="info-cards">
+          <article class="info-card">
+            <div class="section-head">
+              <div>
+                <div class="section-title">Tour Info</div>
+                <div class="section-sub">Start time, year, and official tour site.</div>
+              </div>
             </div>
-          </header>
+            <div class="section-body">
+              <div id="tourInfoGrid" class="tour-info-grid"></div>
+            </div>
+          </article>
 
-          <div class="info-cards">
-            <article class="info-card">
-              <h3>Tour Info</h3>
-              <div class="tour-info-grid" id="tourInfoGrid"></div>
-            </article>
-
-            <article class="info-card">
-              <h3>Setlist</h3>
-              <p class="card-body card-body--hint">
-                Links generate automatically. Tap a song to expand.
-              </p>
+          <article class="info-card">
+            <div class="section-head">
+              <div>
+                <div class="section-title">Setlist</div>
+                <div class="section-sub">Tap a song to reveal auto-generated links.</div>
+              </div>
+            </div>
+            <div class="section-body">
               <div id="setlistList" class="setlist-list"></div>
-            </article>
-          </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- Library -->
+      <section class="browse-list">
+        <div class="grid-head">
+          <div class="muted" id="libraryMeta"></div>
+          <div class="right"></div>
         </div>
 
-        <section class="browse-list">
-          <div class="browse-head">
-            <h3 class="browse-title">Tour Library</h3>
-            <div class="browse-meta" id="libraryMeta"></div>
-          </div>
-
-          <div id="toursBrowseList"></div>
-        </section>
+        <div id="toursBrowseList" class="grid"></div>
       </section>
-    </main>
+    </section>
+  </main>
+
+  <!-- Help modal (Festivals-style) -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-backdrop" id="modalClose"></div>
+    <div class="modal-card">
+      <div class="modal-title">How Setlists Works</div>
+      <div class="modal-body">
+        <ul class="bullets">
+          <li>Browse or search tours.</li>
+          <li>Tap a tour to open the details page.</li>
+          <li>If a setlist is available, tap songs to get links.</li>
+          <li>Apple Music + Spotify links generate automatically.</li>
+        </ul>
+      </div>
+      <div class="modal-actions">
+        <button class="primary-btn" id="modalOk">Got it</button>
+      </div>
+    </div>
   </div>
 
   <script src="./app.js" defer></script>
 
+  <!-- UI-only modal wiring (no change to your app logic) -->
   <script>
     window.addEventListener("DOMContentLoaded", () => {
-      const input = document.getElementById("tourSearch");
-      const clearBtn = document.getElementById("clearSearchBtn");
-      const resultsEl = document.getElementById("searchResults");
-      const metaEl = document.getElementById("libraryMeta");
+      const openHelp = document.getElementById("openHelp");
+      const modal = document.getElementById("modal");
+      const close = document.getElementById("modalClose");
+      const ok = document.getElementById("modalOk");
 
-      if (clearBtn && input) {
-        clearBtn.addEventListener("click", () => {
-          input.value = "";
-          input.dispatchEvent(new Event("input"));
-          resultsEl?.classList.remove("visible");
-          input.focus();
-        });
-      }
+      function openM(e){ e?.preventDefault?.(); modal.hidden = false; }
+      function closeM(){ modal.hidden = true; }
 
-      const list = document.getElementById("toursBrowseList");
-      if (metaEl && list) {
-        const observer = new MutationObserver(() => {
-          const count = list.querySelectorAll(".browse-item").length;
-          metaEl.textContent = count ? `${count} tours` : "";
-        });
-        observer.observe(list, { childList: true });
-      }
+      openHelp?.addEventListener("click", openM);
+      close?.addEventListener("click", closeM);
+      ok?.addEventListener("click", closeM);
     });
   </script>
 </body>
