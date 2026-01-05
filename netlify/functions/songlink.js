@@ -1,55 +1,88 @@
+const https = require("https");
+
 exports.handler = async (event) => {
   try {
-    let artist = (event.queryStringParameters?.artist || "").trim();
-    let title  = (event.queryStringParameters?.title || "").trim();
+    const artistRaw = (event.queryStringParameters?.artist || "").trim();
+    const titleRaw  = (event.queryStringParameters?.title || "").trim();
 
-    if (!artist || !title) {
+    if (!artistRaw || !titleRaw) {
       return json(400, { error: "Missing artist or title" });
     }
 
-    // 🔥 Normalize strings for Song.link
-    artist = normalize(artist);
-    title  = normalize(title);
+    // 1) Find the song on Apple via iTunes Search (no auth)
+    const term = `${titleRaw} ${artistRaw}`;
+    const itunesUrl =
+      `https://itunes.apple.com/search?` +
+      `term=${encodeURIComponent(term)}&entity=song&limit=5`;
 
-    const q = `${title} ${artist}`;
+    const itunes = await getJson(itunesUrl);
+    const results = Array.isArray(itunes?.results) ? itunes.results : [];
 
-    // Search
-    const searchUrl = `https://api.song.link/v1-alpha.1/search?q=${encodeURIComponent(q)}`;
-    const searchRes = await fetch(searchUrl);
-    const searchData = await searchRes.json();
+    // Choose best match: prefer exact-ish artist match
+    const artistLower = normalize(artistRaw);
+    const titleLower = normalize(titleRaw);
 
-    if (!searchRes.ok || !searchData?.links?.length) {
+    const best =
+      results.find(r =>
+        normalize(r.artistName || "").includes(artistLower) &&
+        normalize(r.trackName || "").includes(titleLower)
+      ) || results[0];
+
+    if (!best?.trackViewUrl) {
       return json(200, { spotifyUrl: null, appleUrl: null });
     }
 
-    const entityUrl = searchData.links[0].url;
+    const appleUrl = best.trackViewUrl;
 
-    // Resolve
-    const resolveUrl = `https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(entityUrl)}`;
-    const resolveRes = await fetch(resolveUrl);
-    const resolveData = await resolveRes.json();
+    // 2) Resolve to other platforms via song.link /links
+    const songlinkUrl =
+      `https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(appleUrl)}`;
 
-    const platforms = resolveData?.linksByPlatform || {};
+    const songlink = await getJson(songlinkUrl);
+    const platforms = songlink?.linksByPlatform || {};
 
     return json(200, {
-      spotifyUrl: platforms?.spotify?.url || null,
-      appleUrl: platforms?.appleMusic?.url || null
+      appleUrl: platforms?.appleMusic?.url || appleUrl,
+      spotifyUrl: platforms?.spotify?.url || null
     });
 
   } catch (err) {
-    return json(500, { error: "Songlink failed", details: String(err) });
+    return json(500, { error: "Song resolution failed", details: String(err) });
   }
 };
 
-function normalize(str){
-  return str
+function normalize(str) {
+  return String(str)
     .toLowerCase()
     .replace(/[’‘]/g, "'")
     .replace(/[“”]/g, '"')
-    .replace(/\([^)]*\)/g, '')   // remove (Backstreet’s Back)
-    .replace(/[^a-z0-9\s]/g, '') // strip punctuation
-    .replace(/\s+/g, ' ')
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
+}
+
+function getJson(url) {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (res) => {
+        let data = "";
+        res.on("data", (chunk) => (data += chunk));
+        res.on("end", () => {
+          try {
+            const parsed = JSON.parse(data || "{}");
+            // Treat non-2xx as “no result”, not fatal
+            if (res.statusCode < 200 || res.statusCode >= 300) {
+              return resolve({ __httpError: res.statusCode, __body: parsed });
+            }
+            resolve(parsed);
+          } catch (e) {
+            reject(new Error(`Invalid JSON from ${url}`));
+          }
+        });
+      })
+      .on("error", reject);
+  });
 }
 
 function json(statusCode, body) {
