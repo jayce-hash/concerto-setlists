@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concerto · Setlists & Tour Info</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+  <!-- Fonts (match Festivals pairing) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <div class="page">
+    <header class="page-header">
+      <div class="page-header-inner">
+        <img
+          src="./images/brand/concerto-logo.png"
+          alt="Concerto"
+          class="brand-logo"
+        />
+
+        <h1 class="feature-title">Setlists & Tour Info</h1>
+        <p class="tagline">Pick a tour. Get the setlist—instantly.</p>
+
+        <div class="search-wrapper">
+          <input
+            id="tourSearch"
+            type="search"
+            placeholder="Search tours or artists"
+            autocomplete="off"
+          />
+          <button id="clearSearchBtn" class="icon-btn" title="Clear" aria-label="Clear">×</button>
+          <div id="searchResults" class="search-results"></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section id="infoPanel" class="info-panel info-panel--empty">
+        <div class="info-empty">
+          <h2>Browse setlists</h2>
+          <p>
+            Search above or pick a tour below. We’ll auto-generate Apple Music + Spotify links
+            for each song (no more manual link hunting).
+          </p>
+        </div>
+
+        <div class="info-content" hidden>
+          <button id="backToLibrary" class="back-btn" type="button" aria-label="Back to Tour Library">
+            ← Tour Library
+          </button>
+
+          <header class="info-header">
+            <div>
+              <h2 id="tourName"></h2>
+              <p id="tourArtist" class="tour-artist-line"></p>
+              <p id="tourMeta" class="tour-meta-line"></p>
+            </div>
+          </header>
+
+          <div class="info-cards">
+            <article class="info-card">
+              <h3>Tour Info</h3>
+              <div class="tour-info-grid" id="tourInfoGrid"></div>
+            </article>
+
+            <article class="info-card">
+              <h3>Setlist</h3>
+              <p class="card-body card-body--hint">
+                Links generate automatically. Tap a song to expand.
+              </p>
+              <div id="setlistList" class="setlist-list"></div>
+            </article>
+          </div>
+        </div>
+
+        <section class="browse-list">
+          <div class="browse-head">
+            <h3 class="browse-title">Tour Library</h3>
+            <div class="browse-meta" id="libraryMeta"></div>
+          </div>
+
+          <div id="toursBrowseList"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js" defer></script>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const input = document.getElementById("tourSearch");
+      const clearBtn = document.getElementById("clearSearchBtn");
+      const resultsEl = document.getElementById("searchResults");
+      const metaEl = document.getElementById("libraryMeta");
+
+      if (clearBtn && input) {
+        clearBtn.addEventListener("click", () => {
+          input.value = "";
+          input.dispatchEvent(new Event("input"));
+          resultsEl?.classList.remove("visible");
+          input.focus();
+        });
+      }
+
+      const list = document.getElementById("toursBrowseList");
+      if (metaEl && list) {
+        const observer = new MutationObserver(() => {
+          const count = list.querySelectorAll(".browse-item").length;
+          metaEl.textContent = count ? `${count} tours` : "";
+        });
+        observer.observe(list, { childList: true });
+      }
+    });
+  </script>
+</body>
+</html>
