@@ -177,11 +177,24 @@ function renderTourInfo(t) {
   if (t.tourWebsite) {
     const actions = document.createElement("div");
     actions.className = "tour-info-actions";
-    actions.innerHTML = `
-      <a class="song-link-btn" href="${t.tourWebsite}" target="_blank" rel="noopener">
-        Tour Website
-      </a>
-    `;
+actions.innerHTML = `
+  <button class="song-link-btn" type="button" data-role="tour-website">
+    Tour Website
+  </button>
+`;
+
+const btn = actions.querySelector('[data-role="tour-website"]');
+
+// iOS / in-app WebView tap reliability
+btn.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  window.open(t.tourWebsite, "_blank");
+});
+
+btn.addEventListener("touchstart", (e) => {
+  e.stopPropagation();
+}, { passive: true });
     body.appendChild(actions);
   }
 }
