@@ -1,11 +1,362 @@
 /* ============================================================
-   Setlists UI (accordion rows like your show rows)
+   Concerto — Setlists & Tour Info (LIGHT MODE ONLY)
+   Festivals-aligned typography, spacing, cards
+   ============================================================ */
+
+:root{
+  --bg:#F8F9F9;
+  --ink:#121E36;
+  --muted:#5E6B86;
+  --line:#E2E7F0;
+  --card:#FFFFFF;
+  --accent:#1F2B4A;
+
+  --shadow:0 10px 30px rgba(18,30,54,.10);
+  --shadow2:0 3px 12px rgba(18,30,54,.10);
+
+  --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+
+  --fs-11:11px;
+  --fs-12:12px;
+  --fs-13:13px;
+  --fs-14:14px;
+  --fs-15:15px;
+  --fs-16:16px;
+  --fs-18:18px;
+  --fs-22:22px;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--font);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+
+a{ color:inherit; text-decoration:none; }
+
+/* ============================================================
+   Header (match Festivals)
+   ============================================================ */
+
+.page-header{
+  background:var(--bg);
+  border-bottom:1px solid var(--line);
+  box-shadow:0 2px 8px rgba(18,30,54,.04);
+  padding:10px 0 14px;
+}
+
+.page-header-inner{
+  max-width:680px;
+  margin:0 auto;
+  padding:0 16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:6px;
+}
+
+.brand-logo{
+  max-width:320px;
+  width:86%;
+  height:auto;
+  display:block;
+}
+
+.feature-title{
+  margin:2px 0 0;
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:-0.02em;
+}
+
+.tagline{
+  margin:0;
+  font-size:var(--fs-15);
+  color:var(--muted);
+  line-height:1.45;
+}
+
+.header-actions{ margin-top:6px; }
+
+.btn-ghost{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  padding:10px 14px;
+  font-size:var(--fs-14);
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  box-shadow:var(--shadow2);
+}
+.btn-ghost:hover{ background:#F5F7FB; }
+
+/* ============================================================
+   Container
+   ============================================================ */
+
+.container{
+  max-width:980px;
+  margin:0 auto;
+  padding:18px;
+}
+
+/* ============================================================
+   Hero (search row)
+   ============================================================ */
+
+.hero{ padding:10px 0 8px; }
+
+.search-row{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:10px;
+}
+
+.search{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  box-shadow:var(--shadow2);
+  overflow:hidden;
+}
+
+#tourSearch{
+  width:100%;
+  padding:14px 44px 14px 14px;
+  border:0;
+  outline:0;
+  background:transparent;
+  font-size:var(--fs-15);
+  color:var(--ink);
+}
+
+#tourSearch::placeholder{ color:rgba(94,107,134,.60); }
+
+.icon-btn{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  width:28px;
+  height:28px;
+  border-radius:9px;
+  border:1px solid var(--line);
+  background:#fff;
+  cursor:pointer;
+  font-size:18px;
+  line-height:1;
+  color:var(--muted);
+  box-shadow:var(--shadow2);
+}
+
+/* Search dropdown (Festivals-like) */
+.search-results{
+  margin-top:10px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  max-height:280px;
+  overflow:auto;
+  display:none;
+}
+
+.search-results.visible{ display:block; }
+
+.search-result-item{
+  padding:12px 14px;
+  font-size:var(--fs-14);
+  cursor:pointer;
+  border-bottom:1px solid rgba(18,30,54,.06);
+}
+.search-result-item:last-child{ border-bottom:none; }
+.search-result-item:hover{ background:#F5F7FB; }
+
+/* ============================================================
+   Info panel
+   ============================================================ */
+
+.info-panel{ margin-top:10px; }
+.info-panel--empty .info-empty{ display:block; }
+
+.info-empty{
+  text-align:left;
+  margin-top:14px;
+  padding:16px;
+  background:#fff;
+  border-radius:16px;
+  border:1px solid var(--line);
+  box-shadow:var(--shadow2);
+}
+
+.info-empty h2{
+  margin:0 0 6px;
+  font-size:var(--fs-16);
+  font-weight:750;
+}
+
+.info-empty p{
+  margin:0;
+  font-size:var(--fs-14);
+  color:var(--muted);
+  line-height:1.45;
+}
+
+.info-content{ margin-top:14px; }
+
+.back-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  padding:10px 14px;
+  font-size:var(--fs-14);
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  box-shadow:var(--shadow2);
+  cursor:pointer;
+  margin-bottom:12px;
+}
+.back-btn:hover{ background:#F5F7FB; }
+
+/* Detail header card */
+.info-header{
+  margin:0 0 12px;
+  padding:16px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+}
+
+.info-header h2{
+  margin:0;
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:.01em;
+}
+
+.tour-artist-line{
+  margin:8px 0 0;
+  font-size:var(--fs-14);
+  color:var(--ink);
+  font-weight:600;
+}
+
+.tour-meta-line{
+  margin:4px 0 0;
+  font-size:var(--fs-13);
+  color:var(--muted);
+}
+
+/* Cards container */
+.info-cards{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+/* Festivals “section-card” language */
+.info-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:var(--shadow2);
+  overflow:hidden;
+}
+
+.section-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+}
+
+.section-title{
+  font-weight:750;
+  font-size:var(--fs-14);
+  letter-spacing:.02em;
+}
+
+.section-sub{
+  color:var(--muted);
+  font-size:var(--fs-13);
+  line-height:1.35;
+  margin-top:4px;
+}
+
+.section-body{ padding:14px 16px; }
+
+/* ============================================================
+   Library grid (match Festivals grid/cards)
+   ============================================================ */
+
+.grid-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:14px 0 10px;
+}
+
+.muted{ color:var(--muted); font-size:var(--fs-13); }
+.right{ display:flex; gap:10px; align-items:center; }
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:12px;
+}
+
+/* Your JS creates .browse-item — make it look like Festivals .card */
+.browse-item{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:var(--shadow2);
+  padding:14px;
+  cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.browse-item:hover{ transform:translateY(-2px); box-shadow:var(--shadow); }
+
+.browse-item-name{
+  margin:0;
+  font-size:20px;
+  font-weight:750;
+  letter-spacing:.01em;
+}
+
+.browse-item-meta{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:var(--fs-13);
+  line-height:1.35;
+}
+
+/* ============================================================
+   Tour Info rows
    ============================================================ */
 
 .tour-info-grid{
-  padding:14px 16px 16px;
-  display:grid;
-  grid-template-columns: 1fr;
+  display:flex;
+  flex-direction:column;
   gap:10px;
 }
 
@@ -35,12 +386,11 @@
   text-align:right;
 }
 
-.tour-info-actions{
-  padding:0 16px 16px;
-}
+/* ============================================================
+   Setlist accordion
+   ============================================================ */
 
 .setlist-list{
-  margin:12px 16px 16px;
   border-radius:16px;
   border:1px solid rgba(18,30,54,.08);
   overflow:hidden;
@@ -125,7 +475,7 @@
   color:var(--ink);
   font-weight:600;
   box-shadow:var(--shadow2);
-  cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
 }
 
 .song-link-btn:hover{
@@ -140,7 +490,7 @@
   border-color:var(--accent);
 }
 
-.song-link-btn[disabled]{
+.song-link-btn[aria-disabled="true"]{
   opacity:.55;
   cursor:not-allowed;
   transform:none;
@@ -154,6 +504,107 @@
   line-height:1.35;
 }
 
+/* Empty setlist state */
+.setlist-empty{
+  padding:16px;
+  border-radius:16px;
+  background:#fff;
+  border:1px solid var(--line);
+  box-shadow:var(--shadow2);
+}
+
+.setlist-empty-title{
+  font-size:var(--fs-16);
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.setlist-empty-sub{
+  font-size:var(--fs-14);
+  color:var(--muted);
+  line-height:1.45;
+}
+
+/* Buttons */
+.primary-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  padding:10px 14px;
+  font-size:var(--fs-13);
+  border:1px solid var(--line);
+  cursor:pointer;
+  background:var(--accent);
+  color:#fff;
+  border-color:var(--accent);
+  box-shadow:var(--shadow2);
+}
+
+/* ============================================================
+   Modal (Festivals)
+   ============================================================ */
+
+.modal[hidden]{ display:none; }
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:80;
+  display:grid;
+  place-items:center;
+}
+
+.modal-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(18,30,54,.35);
+}
+
+.modal-card{
+  position:relative;
+  width:min(520px, calc(100% - 26px));
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  padding:18px;
+}
+
+.modal-title{
+  font-size:var(--fs-18);
+  font-weight:750;
+}
+
+.modal-body{
+  color:var(--muted);
+  margin-top:10px;
+  line-height:1.45;
+  font-size:var(--fs-14);
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:14px;
+}
+
+.bullets{ margin:0; padding-left:18px; }
+.bullets li{ margin:8px 0; }
+
+/* ============================================================
+   Responsive (match Festivals breakpoints)
+   ============================================================ */
+
+@media (max-width: 880px){
+  .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
 @media (max-width: 560px){
   .song-links{ grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px){
+  .grid{ grid-template-columns: 1fr; }
+  .brand-logo{ width:92%; max-width:340px; }
+  .feature-title{ font-size:26px; }
 }
