@@ -1,0 +1,159 @@
+/* ============================================================
+   Setlists UI (accordion rows like your show rows)
+   ============================================================ */
+
+.tour-info-grid{
+  padding:14px 16px 16px;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:10px;
+}
+
+.tour-info-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px;
+  background:#fff;
+  border:1px solid rgba(18,30,54,.08);
+  border-radius:14px;
+  box-shadow:var(--shadow2);
+}
+
+.tour-info-label{
+  font-size:var(--fs-12);
+  color:var(--muted);
+  font-weight:700;
+  letter-spacing:.02em;
+}
+
+.tour-info-value{
+  font-size:var(--fs-14);
+  color:var(--ink);
+  font-weight:650;
+  text-align:right;
+}
+
+.tour-info-actions{
+  padding:0 16px 16px;
+}
+
+.setlist-list{
+  margin:12px 16px 16px;
+  border-radius:16px;
+  border:1px solid rgba(18,30,54,.08);
+  overflow:hidden;
+  background:#fff;
+  box-shadow:var(--shadow2);
+}
+
+.song-row{ border-bottom:1px solid rgba(18,30,54,.08); }
+.song-row:last-child{ border-bottom:none; }
+
+.song-row-header{
+  width:100%;
+  padding:12px 12px;
+  border:0;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  text-align:left;
+}
+
+.song-row-header:hover{ background:#F5F7FB; }
+
+.song-index{
+  width:24px;
+  flex:0 0 24px;
+  text-align:center;
+  font-size:var(--fs-12);
+  color:var(--muted);
+  font-weight:800;
+}
+
+.song-title{
+  font-weight:800;
+  color:var(--ink);
+  flex:1 1 auto;
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.song-meta{
+  color:var(--muted);
+  font-size:var(--fs-12);
+  white-space:nowrap;
+  flex:0 0 auto;
+}
+
+.song-chevron{
+  color:var(--muted);
+  font-size:var(--fs-12);
+  margin-left:auto;
+  flex:0 0 auto;
+}
+
+.song-dropdown{
+  display:none;
+  padding:12px;
+  background:rgba(18,30,54,.03);
+  border-top:1px solid rgba(18,30,54,.08);
+}
+
+.song-dropdown.open{ display:block; }
+
+.song-links{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+}
+
+.song-link-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-size:var(--fs-13);
+  color:var(--ink);
+  font-weight:600;
+  box-shadow:var(--shadow2);
+  cursor:pointer;
+}
+
+.song-link-btn:hover{
+  background:#F5F7FB;
+  transform:translateY(-1px);
+  box-shadow:var(--shadow);
+}
+
+.song-link-btn.primary{
+  background:var(--accent);
+  color:#fff;
+  border-color:var(--accent);
+}
+
+.song-link-btn[disabled]{
+  opacity:.55;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:var(--shadow2);
+}
+
+.song-status{
+  margin-top:10px;
+  font-size:var(--fs-13);
+  color:var(--muted);
+  line-height:1.35;
+}
+
+@media (max-width: 560px){
+  .song-links{ grid-template-columns: 1fr; }
+}
