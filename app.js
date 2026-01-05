@@ -53,7 +53,7 @@ function renderLibrary(list) {
     item.className = "browse-item";
     item.innerHTML = `
       <div class="browse-item-name">${escapeHtml(t.tourName)}</div>
-      <div class="browse-item-meta">${escapeHtml(t.artist)} · ${escapeHtml(String(t.year || ""))}</div>
+      <div class="browse-item-meta">${escapeHtml(t.artist)}</div>
     `;
     item.addEventListener("click", () => selectTour(t.tourId));
     wrap.appendChild(item);
