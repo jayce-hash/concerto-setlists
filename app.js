@@ -14,7 +14,7 @@ const state = {
 };
 
 const CACHE_KEY = "concerto_setlist_cache_v1";
-// cache format: { "<artist>::<title>": { spotifyUrl, appleUrl, lyricsUrl, fetchedAt } }
+// cache format: { "<artist>::<title>": { spotifyUrl, appleUrl, fetchedAt } }
 const cache = loadCache();
 
 function loadCache() {
@@ -30,6 +30,44 @@ function saveCache() {
 
 function cacheKey(artist, title) {
   return `${(artist || "").trim().toLowerCase()}::${(title || "").trim().toLowerCase()}`;
+}
+
+// ------------------------------
+// Open external (iOS WebView safe)
+// ------------------------------
+function openExternal(url) {
+  if (!url) return;
+
+  // Try open new tab/window first
+  const w = window.open(url, "_blank");
+
+  // If blocked, fall back to same-window navigation
+  if (!w) window.location.href = url;
+}
+
+// One-tap helper for iOS webviews
+function bindOneTapOpen(btn, url) {
+  if (!btn) return;
+
+  // Clear any previous handler
+  btn.onclick = null;
+
+  if (!url) {
+    btn.setAttribute("aria-disabled", "true");
+    return;
+  }
+
+  btn.removeAttribute("aria-disabled");
+
+  const handler = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openExternal(url);
+  };
+
+  // touchend is the most reliable “tap” event in in-app browsers
+  btn.addEventListener("touchend", handler, { passive: false, once: true });
+  btn.addEventListener("click", handler, { once: true });
 }
 
 // ------------------------------
@@ -83,10 +121,8 @@ function initSearch() {
       );
     });
 
-    // Update library to match query
     renderLibrary(hits);
 
-    // Dropdown results
     resultsEl.innerHTML = "";
     hits.slice(0, 8).forEach((t) => {
       const r = document.createElement("div");
@@ -105,7 +141,6 @@ function initSearch() {
     else resultsEl.classList.remove("visible");
   });
 
-  // click outside closes dropdown
   document.addEventListener("click", (e) => {
     if (!resultsEl.contains(e.target) && e.target !== input) {
       resultsEl.classList.remove("visible");
@@ -147,7 +182,6 @@ function selectTour(tourId) {
 
   setDetailMode(true);
 
-  // Back button
   el("backToLibrary").onclick = () => {
     state.selectedTour = null;
     setDetailMode(false);
@@ -164,7 +198,7 @@ function renderTourInfo(t) {
   grid.innerHTML = `
     <div class="tour-info-row">
       <div class="tour-info-label">Start Time (Local)</div>
-      <div class="tour-info-value">${t.startTimeLocal || "—"}</div>
+      <div class="tour-info-value">${escapeHtml(t.startTimeLocal || "—")}</div>
     </div>
   `;
 
@@ -177,25 +211,15 @@ function renderTourInfo(t) {
   if (t.tourWebsite) {
     const actions = document.createElement("div");
     actions.className = "tour-info-actions";
-actions.innerHTML = `
-  <button class="song-link-btn" type="button" data-role="tour-website">
-    Tour Website
-  </button>
-`;
-
-const btn = actions.querySelector('[data-role="tour-website"]');
-
-// iOS / in-app WebView tap reliability
-btn.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  window.open(t.tourWebsite, "_blank");
-});
-
-btn.addEventListener("touchstart", (e) => {
-  e.stopPropagation();
-}, { passive: true });
+    actions.innerHTML = `
+      <button class="song-link-btn" type="button" data-role="tour-website" aria-disabled="false">
+        Tour Website
+      </button>
+    `;
     body.appendChild(actions);
+
+    const btn = actions.querySelector('[data-role="tour-website"]');
+    bindOneTapOpen(btn, t.tourWebsite);
   }
 }
 
@@ -213,14 +237,9 @@ function renderSetlist(tour) {
     return;
   }
 
-  // Clean any prior appended tour actions (website button duplicates) inside Tour Info card
-  // (This keeps it from stacking when switching tours)
-  const infoCard = listEl.closest(".info-cards")?.querySelector(".info-card");
-  // Not necessary to over-engineer; leaving as-is is fine.
-
   setlist.forEach((song, idx) => {
     const title = typeof song === "string" ? song : song.title;
-    const artist = song.artist || tour.artist; // per-song override optional
+    const artist = song.artist || tour.artist;
 
     const row = document.createElement("div");
     row.className = "song-row";
@@ -238,14 +257,14 @@ function renderSetlist(tour) {
     const dropdown = document.createElement("div");
     dropdown.className = "song-dropdown";
     dropdown.innerHTML = `
-  <div class="song-links">
-  <a class="song-link-btn" data-role="apple" target="_blank" rel="noopener" href="#" aria-disabled="true">
-    Listen on Apple Music
-  </a>
-  <a class="song-link-btn primary" data-role="spotify" target="_blank" rel="noopener" href="#" aria-disabled="true">
-    Listen on Spotify
-  </a>
-</div>
+      <div class="song-links">
+        <button class="song-link-btn" data-role="apple" type="button" aria-disabled="true">
+          Listen on Apple Music
+        </button>
+        <button class="song-link-btn" data-role="spotify" type="button" aria-disabled="true">
+          Listen on Spotify
+        </button>
+      </div>
     `;
 
     header.addEventListener("click", async () => {
@@ -263,13 +282,13 @@ function renderSetlist(tour) {
 }
 
 async function hydrateSongLinks({ title, artist, dropdown }) {
-  const appleBtn  = dropdown.querySelector('[data-role="apple"]');
-  const spotifyBtn= dropdown.querySelector('[data-role="spotify"]');
+  const appleBtn = dropdown.querySelector('[data-role="apple"]');
+  const spotifyBtn = dropdown.querySelector('[data-role="spotify"]');
 
-  // iOS tap fix
-  dropdown.querySelectorAll(".song-link-btn").forEach((a) => {
-    a.addEventListener("click", (e) => e.stopPropagation());
-    a.addEventListener("touchstart", (e) => e.stopPropagation(), { passive: true });
+  // Stop taps on buttons from collapsing the accordion
+  dropdown.querySelectorAll("button.song-link-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => e.stopPropagation());
+    btn.addEventListener("touchend", (e) => e.stopPropagation(), { passive: true });
   });
 
   const key = cacheKey(artist, title);
@@ -299,31 +318,13 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
 }
 
 function applyLinks({ cached, appleBtn, spotifyBtn }) {
-  if (cached.spotifyUrl) {
-    spotifyBtn.href = cached.spotifyUrl;
-    spotifyBtn.removeAttribute("aria-disabled");
-  } else {
-    spotifyBtn.setAttribute("aria-disabled", "true");
-  }
-
-  if (cached.appleUrl) {
-    appleBtn.href = cached.appleUrl;
-    appleBtn.removeAttribute("aria-disabled");
-  } else {
-    appleBtn.setAttribute("aria-disabled", "true");
-  }
-
-  [appleBtn, spotifyBtn].forEach((a) => {
-    a.onclick = (e) => {
-      if (a.getAttribute("aria-disabled") === "true") e.preventDefault();
-    };
-  });
+  bindOneTapOpen(appleBtn, cached.appleUrl);
+  bindOneTapOpen(spotifyBtn, cached.spotifyUrl);
 }
 
 // ------------------------------
 // Netlify function API calls
 // ------------------------------
-
 async function apiSonglinkBySearch({ artist, title }) {
   const url = `/.netlify/functions/songlink?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`;
   const res = await fetch(url);
