@@ -161,32 +161,37 @@ function selectTour(tourId) {
 function renderTourInfo(t) {
   const grid = el("tourInfoGrid");
 
+  // Always reset the grid
   const rows = [
     { label: "Tour Website", value: t.tourWebsite ? "Open" : "Not available" },
-    { label: "Start Time (Local)", value: t.startTimeLocal || "—" },
-    { label: "Year", value: t.year || "—" }
+    { label: "Start Time (Local)", value: t.startTimeLocal || "—" }
+    // NOTE: Year removed per your new UI preference
   ];
 
   grid.innerHTML = rows.map((r) => `
     <div class="tour-info-row">
-      <div>
-        <div class="tour-info-label">${escapeHtml(r.label)}</div>
-      </div>
+      <div class="tour-info-label">${escapeHtml(r.label)}</div>
       <div class="tour-info-value">${escapeHtml(String(r.value))}</div>
     </div>
   `).join("");
 
-  // Add an action button row if website exists
+  // Remove any previous actions row (prevents stacking)
+  const body = grid.closest(".section-body");
+  if (!body) return;
+
+  const existing = body.querySelector(".tour-info-actions");
+  if (existing) existing.remove();
+
+  // Add button only if website exists
   if (t.tourWebsite) {
     const actions = document.createElement("div");
     actions.className = "tour-info-actions";
     actions.innerHTML = `
-      <a class="show-link-btn primary" href="${t.tourWebsite}" target="_blank" rel="noopener">
+      <a class="show-link-btn" href="${t.tourWebsite}" target="_blank" rel="noopener">
         Tour Website
       </a>
     `;
-    // place under info card body
-    grid.parentElement.appendChild(actions);
+    body.appendChild(actions);
   }
 }
 
