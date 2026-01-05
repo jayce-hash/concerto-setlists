@@ -5,7 +5,7 @@
   <title>Concerto · Setlists & Tour Info</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-  <!-- Fonts (match Festivals pairing) -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
         class="brand-logo"
       />
 
-      <h1 class="feature-title">Setlists & Tour Info</h1>
+      <h1 class="feature-title">Setlists &amp; Tour Info</h1>
       <p class="tagline">Pick a tour. Get the setlist—instantly.</p>
 
       <div class="header-actions">
@@ -32,7 +32,7 @@
   </header>
 
   <main class="container">
-    <!-- HERO = search row (Festivals-style) -->
+    <!-- Search -->
     <section class="hero">
       <div class="search-row">
         <div class="search">
@@ -46,19 +46,18 @@
         </div>
       </div>
 
-      <!-- Keep your dropdown element (JS uses it) -->
+      <!-- Keep dropdown (JS uses it) -->
       <div id="searchResults" class="search-results"></div>
     </section>
 
     <!-- Main panel -->
     <section id="infoPanel" class="info-panel info-panel--empty">
-
       <!-- Empty state -->
       <div class="info-empty">
         <h2>Browse tours</h2>
         <p>
-          Search above or pick one below. When a setlist is available, links generate automatically
-          for Apple Music, Spotify, and lyrics.
+          Search above or pick one below. If a setlist is available, tap songs to generate
+          Apple Music and Spotify links automatically.
         </p>
       </div>
 
@@ -81,7 +80,7 @@
             <div class="section-head">
               <div>
                 <div class="section-title">Tour Info</div>
-                <div class="section-sub">Start time, year, and official tour site.</div>
+                <div class="section-sub">Start time and official tour site.</div>
               </div>
             </div>
             <div class="section-body">
@@ -93,7 +92,7 @@
             <div class="section-head">
               <div>
                 <div class="section-title">Setlist</div>
-                <div class="section-sub">Tap a song to reveal auto-generated links.</div>
+                <div class="section-sub">Tap a song to reveal links.</div>
               </div>
             </div>
             <div class="section-body">
@@ -115,7 +114,7 @@
     </section>
   </main>
 
-  <!-- Help modal (Festivals-style) -->
+  <!-- Help modal -->
   <div class="modal" id="modal" hidden>
     <div class="modal-backdrop" id="modalClose"></div>
     <div class="modal-card">
@@ -136,7 +135,6 @@
 
   <script src="./app.js" defer></script>
 
-  <!-- UI-only modal wiring (no change to your app logic) -->
   <script>
     window.addEventListener("DOMContentLoaded", () => {
       const openHelp = document.getElementById("openHelp");
