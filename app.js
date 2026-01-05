@@ -229,12 +229,14 @@ function renderSetlist(tour) {
     const dropdown = document.createElement("div");
     dropdown.className = "song-dropdown";
     dropdown.innerHTML = `
-      <div class="song-links">
-        <a class="song-link-btn" data-role="lyrics" target="_blank" rel="noopener" href="#" aria-disabled="true">View Lyrics</a>
-        <a class="song-link-btn" data-role="apple"  target="_blank" rel="noopener" href="#" aria-disabled="true">Listen on Apple Music</a>
-        <a class="song-link-btn primary" data-role="spotify" target="_blank" rel="noopener" href="#" aria-disabled="true">Listen on Spotify</a>
-      </div>
-      <div class="song-status" data-role="status">Generating links…</div>
+  <div class="song-links">
+  <a class="song-link-btn" data-role="apple" target="_blank" rel="noopener" href="#" aria-disabled="true">
+    Listen on Apple Music
+  </a>
+  <a class="song-link-btn primary" data-role="spotify" target="_blank" rel="noopener" href="#" aria-disabled="true">
+    Listen on Spotify
+  </a>
+</div>
     `;
 
     header.addEventListener("click", async () => {
@@ -252,12 +254,10 @@ function renderSetlist(tour) {
 }
 
 async function hydrateSongLinks({ title, artist, dropdown }) {
-  const statusEl = dropdown.querySelector('[data-role="status"]');
-  const lyricsBtn = dropdown.querySelector('[data-role="lyrics"]');
   const appleBtn  = dropdown.querySelector('[data-role="apple"]');
   const spotifyBtn= dropdown.querySelector('[data-role="spotify"]');
 
-  // Prevent the accordion from “competing” with taps on iOS
+  // iOS tap fix
   dropdown.querySelectorAll(".song-link-btn").forEach((a) => {
     a.addEventListener("click", (e) => e.stopPropagation());
     a.addEventListener("touchstart", (e) => e.stopPropagation(), { passive: true });
@@ -266,83 +266,45 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
   const key = cacheKey(artist, title);
   const cached = cache[key];
 
-  if (cached?.spotifyUrl || cached?.appleUrl || cached?.lyricsUrl) {
-    applyLinks({ cached, statusEl, lyricsBtn, appleBtn, spotifyBtn });
-    statusEl.textContent = "Links ready.";
+  if (cached?.spotifyUrl || cached?.appleUrl) {
+    applyLinks({ cached, appleBtn, spotifyBtn });
     return;
   }
 
   try {
-    statusEl.textContent = "Searching…";
-    statusEl.style.color = "var(--muted)";
-
-    // Run both calls in parallel + timeout safety
-    const withTimeout = (promise, ms) =>
-      Promise.race([
-        promise,
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Request timed out")), ms))
-      ]);
-
-const songlink = await withTimeout(apiSonglinkBySearch({ artist, title }), 8000);
-
-// lyrics is “nice to have” — don’t block the UI
-let lyrics = { lyricsUrl: null };
-try {
-  lyrics = await withTimeout(apiLyrics({ artist, title }), 3000);
-} catch {
-  lyrics = { lyricsUrl: null };
-}
+    const songlink = await apiSonglinkBySearch({ artist, title });
 
     const payload = {
       spotifyUrl: songlink?.spotifyUrl || null,
       appleUrl: songlink?.appleUrl || null,
-      lyricsUrl: lyrics?.lyricsUrl || null,
       fetchedAt: Date.now()
     };
 
     cache[key] = payload;
     saveCache();
 
-    applyLinks({ cached: payload, statusEl, lyricsBtn, appleBtn, spotifyBtn });
-    statusEl.textContent = "Links ready.";
+    applyLinks({ cached: payload, appleBtn, spotifyBtn });
   } catch (err) {
     console.error(err);
-    statusEl.textContent = "Couldn’t generate links. Try again.";
-    statusEl.style.color = "var(--muted)";
   }
 }
 
-function applyLinks({ cached, statusEl, lyricsBtn, appleBtn, spotifyBtn }) {
-  // Spotify
+function applyLinks({ cached, appleBtn, spotifyBtn }) {
   if (cached.spotifyUrl) {
     spotifyBtn.href = cached.spotifyUrl;
     spotifyBtn.removeAttribute("aria-disabled");
   } else {
-    spotifyBtn.href = "#";
     spotifyBtn.setAttribute("aria-disabled", "true");
   }
 
-  // Apple
   if (cached.appleUrl) {
     appleBtn.href = cached.appleUrl;
     appleBtn.removeAttribute("aria-disabled");
   } else {
-    appleBtn.href = "#";
     appleBtn.setAttribute("aria-disabled", "true");
   }
 
-  // Lyrics
-  if (cached.lyricsUrl) {
-    lyricsBtn.href = cached.lyricsUrl;
-    lyricsBtn.removeAttribute("aria-disabled");
-  } else {
-    lyricsBtn.href = "#";
-    lyricsBtn.setAttribute("aria-disabled", "true");
-    statusEl.textContent = "Links ready. Lyrics not available for this song.";
-  }
-
-  // Disable clicks when aria-disabled
-  [lyricsBtn, appleBtn, spotifyBtn].forEach((a) => {
+  [appleBtn, spotifyBtn].forEach((a) => {
     a.onclick = (e) => {
       if (a.getAttribute("aria-disabled") === "true") e.preventDefault();
     };
@@ -357,13 +319,6 @@ async function apiSonglinkBySearch({ artist, title }) {
   const url = `/.netlify/functions/songlink?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`;
   const res = await fetch(url);
   return res.json();
-}
-
-async function apiLyrics({ artist, title }) {
-  const url = `/.netlify/functions/lyrics?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`;
-  const res = await fetch(url);
-  if (!res.ok) return { lyricsUrl: null };
-  return res.json(); // { lyricsUrl }
 }
 
 // ------------------------------
