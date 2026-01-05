@@ -6,7 +6,7 @@
   "year": 2026,
   "showsCount": 14,
   "startTimeLocal": "8:00 PM",
-  "tourWebsite": "",
+  "tourWebsite": "https://sphere.backstreetboys.com",
   "setlistStatus": "available",
   "notes": "Setlist based on opening residency shows.",
   "setlist": [
@@ -40,10 +40,9 @@
     "tourId": "back-to-badlands-tour",
     "tourName": "Back To Badlands Tour",
     "artist": "Halsey",
-    "year": 2026,
     "showsCount": 8,
     "startTimeLocal": "",
-    "tourWebsite": "",
+    "tourWebsite": "https://badlandstour.com",
     "setlistStatus": "not_released",
     "setlist": [],
     "notes": "Setlist will appear here once released."
@@ -55,7 +54,7 @@
     "year": 2026,
     "showsCount": 4,
     "startTimeLocal": "",
-    "tourWebsite": "",
+    "tourWebsite": "https://www.hilaryduff.com/live",
     "setlistStatus": "not_released",
     "setlist": [],
     "notes": "Setlist will appear here once released."
@@ -67,7 +66,7 @@
     "year": 2026,
     "showsCount": 8,
     "startTimeLocal": "",
-    "tourWebsite": "",
+    "tourWebsite": "https://jessiejtour.com",
     "setlistStatus": "not_released",
     "setlist": [],
     "notes": "Setlist will appear here once released."
@@ -79,7 +78,7 @@
   "year": 2026,
   "showsCount": 25,
   "startTimeLocal": "",
-  "tourWebsite": "",
+  "tourWebsite": "https://www.ladygaga.com/us-en/live",
   "setlistStatus": "available",
   "notes": "Setlist may vary by date.",
   "setlist": [
@@ -121,7 +120,7 @@
     "year": 2026,
     "showsCount": 16,
     "startTimeLocal": "",
-    "tourWebsite": "",
+    "tourWebsite": "https://shop.conangray.com/pages/tour?srsltid=AfmBOorxKLA5D3Gzvo9pE1VYQIWRtBTeVZR3lL5yqCI39ItjS7jeiVK_",
     "setlistStatus": "not_released",
     "setlist": [],
     "notes": "Setlist will appear here once released."
@@ -133,7 +132,7 @@
     "year": 2026,
     "showsCount": 41,
     "startTimeLocal": "",
-    "tourWebsite": "",
+    "tourWebsite": "https://www.alexwarrenofficial.com/#tour",
     "setlistStatus": "not_released",
     "setlist": [],
     "notes": "Setlist will appear here once released."
@@ -145,7 +144,7 @@
     "year": 2026,
     "showsCount": 23,
     "startTimeLocal": "",
-    "tourWebsite": "",
+    "tourWebsite": "https://www.demilovato.com",
     "setlistStatus": "not_released",
     "setlist": [],
     "notes": "Setlist will appear here once released."
@@ -157,7 +156,7 @@
     "year": 2026,
     "showsCount": 31,
     "startTimeLocal": "",
-    "tourWebsite": "",
+    "tourWebsite": "https://www.arianagrande.com/tour/",
     "setlistStatus": "not_released",
     "setlist": [],
     "notes": "Setlist will appear here once released."
@@ -169,7 +168,7 @@
     "year": 2026,
     "showsCount": 27,
     "startTimeLocal": "",
-    "tourWebsite": "",
+    "tourWebsite": "https://northamerica.edsheeran.com",
     "setlistStatus": "not_released",
     "setlist": [],
     "notes": "Setlist will appear here once released."
@@ -181,7 +180,7 @@
     "year": 2026,
     "showsCount": 22,
     "startTimeLocal": "",
-    "tourWebsite": "",
+    "tourWebsite": "https://www.oliviadeano.com/#tour",
     "setlistStatus": "not_released",
     "setlist": [],
     "notes": "Setlist will appear here once released."
