@@ -283,13 +283,15 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
         new Promise((_, reject) => setTimeout(() => reject(new Error("Request timed out")), ms))
       ]);
 
-    const [songlink, lyrics] = await withTimeout(
-      Promise.all([
-        apiSonglinkBySearch({ artist, title }),
-        apiLyrics({ artist, title })
-      ]),
-      8000
-    );
+const songlink = await withTimeout(apiSonglinkBySearch({ artist, title }), 8000);
+
+// lyrics is “nice to have” — don’t block the UI
+let lyrics = { lyricsUrl: null };
+try {
+  lyrics = await withTimeout(apiLyrics({ artist, title }), 3000);
+} catch {
+  lyrics = { lyricsUrl: null };
+}
 
     const payload = {
       spotifyUrl: songlink?.spotifyUrl || null,
