@@ -4,6 +4,11 @@
 // - Renders library + search dropdown
 // - On tour select: renders Tour Info + Setlist accordion
 // - Auto-generates Spotify + Apple Music links via Netlify functions
+//
+// FIXES:
+// 1) Use BuildFire navigation.openWindow(..., "_system") for ONE-TAP external opens
+// 2) Do NOT use touchend/pointer handlers (they cause long-press weirdness in iOS WebViews)
+// 3) Do NOT override button onclick with stopPropagation (use capture listener instead)
 // ============================================================
 
 const el = (id) => document.getElementById(id);
@@ -36,17 +41,15 @@ function cacheKey(artist, title) {
 
 // ------------------------------
 // Open external (BuildFire/Cordova/iOS WebView safe)
+// Use BuildFire first (this is what worked in your WYSIWYG snippet)
 // ------------------------------
-function openExternal(url, { preferSystem = true } = {}) {
+function openExternal(url, target = "_system") {
   if (!url) return;
 
-  // Prefer BuildFire external browser if available
+  // BuildFire: most reliable one-tap
   try {
     if (window.buildfire?.navigation?.openWindow) {
-      window.buildfire.navigation.openWindow(
-        url,
-        preferSystem ? "_system" : "_blank"
-      );
+      window.buildfire.navigation.openWindow(url, target);
       return;
     }
   } catch {}
@@ -54,7 +57,7 @@ function openExternal(url, { preferSystem = true } = {}) {
   // Cordova InAppBrowser (if present)
   try {
     if (window.cordova?.InAppBrowser?.open) {
-      window.cordova.InAppBrowser.open(url, preferSystem ? "_system" : "_blank");
+      window.cordova.InAppBrowser.open(url, target);
       return;
     }
   } catch {}
@@ -64,7 +67,29 @@ function openExternal(url, { preferSystem = true } = {}) {
   if (!w) window.location.href = url;
 }
 
-// Apple Music: try to open the Music app first, then fallback to https
+// One-tap binder (CLICK ONLY; no touchend/pointerup)
+function bindOneTapOpen(node, url, target = "_system") {
+  if (!node) return;
+
+  if (!url) {
+    node.setAttribute("aria-disabled", "true");
+    node.disabled = true;
+    node.onclick = null;
+    return;
+  }
+
+  node.removeAttribute("aria-disabled");
+  node.disabled = false;
+
+  node.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openExternal(url, target);
+  };
+}
+
+// Apple Music: prefer opening the Music app (itms-apps) but keep it simple.
+// In BuildFire, even https://music.apple.com opens fine with "_system".
 function normalizeAppleUrl(url) {
   if (!url) return null;
   return String(url).replace("geo.music.apple.com", "music.apple.com");
@@ -75,72 +100,33 @@ function appleDeepLink(url) {
   const itms = http.replace(/^https?:\/\//, "itms-apps://");
   return { itms, http };
 }
-
-// One-tap helper (NO once:true, no accumulating listeners)
-function bindOneTapOpen(el, url, opts) {
-  if (!el) return;
-
-  // Store current url so rebinding doesn't stack
-  el.dataset.openUrl = url || "";
-
-  if (!url) {
-    el.setAttribute("aria-disabled", "true");
-    el.disabled = true;
-    el.onclick = null;
-    el.ontouchend = null;
-    el.onpointerup = null;
-    return;
-  }
-
-  el.removeAttribute("aria-disabled");
-  el.disabled = false;
-
-  const handler = (e) => {
-    if (el.getAttribute("aria-disabled") === "true") return;
-    e.preventDefault();
-    e.stopPropagation();
-    openExternal(el.dataset.openUrl, opts);
-  };
-
-  // Use direct assignments so we overwrite old handlers (no stacking)
-  el.onclick = handler;
-  el.ontouchend = handler;
-  el.onpointerup = handler;
-}
-
-// Apple “one tap” (Music app first)
-function bindOneTapApple(el, appleUrl) {
-  if (!el) return;
+function bindOneTapApple(node, appleUrl) {
+  if (!node) return;
 
   const links = appleDeepLink(appleUrl);
   if (!links) {
-    el.setAttribute("aria-disabled", "true");
-    el.disabled = true;
-    el.onclick = null;
-    el.ontouchend = null;
-    el.onpointerup = null;
+    node.setAttribute("aria-disabled", "true");
+    node.disabled = true;
+    node.onclick = null;
     return;
   }
 
-  el.removeAttribute("aria-disabled");
-  el.disabled = false;
+  node.removeAttribute("aria-disabled");
+  node.disabled = false;
 
-  const handler = (e) => {
+  // Try Music app first; if it doesn't open, user still has a web URL option later.
+  node.onclick = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Attempt to open Music app
-    openExternal(links.itms, { preferSystem: true });
+    // Attempt app
+    openExternal(links.itms, "_system");
 
-    // Fallback to web if app-open fails silently in the webview
+    // Fallback to web after a short delay (safe in most shells)
     setTimeout(() => {
-      openExternal(links.http, { preferSystem: true });
+      openExternal(links.http, "_system");
     }, 450);
   };
-
-  el.onclick = handler;
-  el.ontouchend = handler;
-  el.onpointerup = handler;
 }
 
 // ------------------------------
@@ -265,6 +251,7 @@ function selectTour(tourId) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+// Tour info: Website row is a pill button like Start Time and opens external browser one-tap
 function renderTourInfo(t) {
   const grid = el("tourInfoGrid");
 
@@ -277,7 +264,7 @@ function renderTourInfo(t) {
     ${
       t.tourWebsite
         ? `
-      <button class="tour-info-row tour-info-row--button" type="button" data-role="tour-website" aria-disabled="false">
+      <button class="tour-info-row tour-info-row--button" type="button" data-role="tour-website">
         <div class="tour-info-label">Tour Website</div>
         <div class="tour-info-value">Open</div>
       </button>
@@ -287,8 +274,7 @@ function renderTourInfo(t) {
   `;
 
   const btn = grid.querySelector('[data-role="tour-website"]');
-  // Force external browser when possible
-  if (btn && t.tourWebsite) bindOneTapOpen(btn, t.tourWebsite, { preferSystem: true });
+  if (btn && t.tourWebsite) bindOneTapOpen(btn, t.tourWebsite, "_system");
 }
 
 // ------------------------------
@@ -353,11 +339,10 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
   const appleBtn = dropdown.querySelector('[data-role="apple"]');
   const spotifyBtn = dropdown.querySelector('[data-role="spotify"]');
 
-  // Stop taps on buttons from collapsing the accordion
+  // Prevent clicks on link buttons from toggling accordion
+  // IMPORTANT: capture=true so it doesn't overwrite our onclick binders.
   dropdown.querySelectorAll("button.song-link-btn").forEach((btn) => {
-    btn.onclick = (e) => e.stopPropagation();
-    btn.ontouchend = (e) => e.stopPropagation();
-    btn.onpointerup = (e) => e.stopPropagation();
+    btn.addEventListener("click", (e) => e.stopPropagation(), true);
   });
 
   const key = cacheKey(artist, title);
@@ -387,10 +372,8 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
 }
 
 function applyLinks({ cached, appleBtn, spotifyBtn }) {
-  // Spotify: normal external open
-  bindOneTapOpen(spotifyBtn, cached.spotifyUrl, { preferSystem: true });
-
-  // Apple: attempt Music app first, then web fallback
+  // Use BuildFire external open for both (one tap)
+  bindOneTapOpen(spotifyBtn, cached.spotifyUrl, "_system");
   bindOneTapApple(appleBtn, cached.appleUrl);
 }
 
