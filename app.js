@@ -200,27 +200,21 @@ function renderTourInfo(t) {
       <div class="tour-info-label">Start Time (Local)</div>
       <div class="tour-info-value">${escapeHtml(t.startTimeLocal || "—")}</div>
     </div>
+
+    ${
+      t.tourWebsite
+        ? `
+      <button class="tour-info-row tour-info-row--button" type="button" data-role="tour-website">
+        <div class="tour-info-label">Tour Website</div>
+        <div class="tour-info-value">Open</div>
+      </button>
+      `
+        : ""
+    }
   `;
 
-  const body = grid.closest(".section-body");
-  if (!body) return;
-
-  const existing = body.querySelector(".tour-info-actions");
-  if (existing) existing.remove();
-
-  if (t.tourWebsite) {
-    const actions = document.createElement("div");
-    actions.className = "tour-info-actions";
-    actions.innerHTML = `
-      <button class="song-link-btn" type="button" data-role="tour-website" aria-disabled="false">
-        Tour Website
-      </button>
-    `;
-    body.appendChild(actions);
-
-    const btn = actions.querySelector('[data-role="tour-website"]');
-    bindOneTapOpen(btn, t.tourWebsite);
-  }
+  const btn = grid.querySelector('[data-role="tour-website"]');
+  if (btn && t.tourWebsite) bindOneTapOpen(btn, t.tourWebsite);
 }
 
 // ------------------------------
