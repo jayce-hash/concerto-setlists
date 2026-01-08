@@ -38,36 +38,48 @@ function cacheKey(artist, title) {
 function openExternal(url) {
   if (!url) return;
 
-  // Try open new tab/window first
-  const w = window.open(url, "_blank");
+  // BuildFire native (best + opens external browser/app)
+  if (window.buildfire?.navigation?.openWindow) {
+    // "_system" = external browser (Safari/Chrome) or external app when supported
+    buildfire.navigation.openWindow(url, "_system");
+    return;
+  }
 
-  // If blocked, fall back to same-window navigation
+  // Fallback (regular browser)
+  const w = window.open(url, "_blank", "noopener,noreferrer");
   if (!w) window.location.href = url;
 }
 
-// One-tap helper for iOS webviews
 function bindOneTapOpen(btn, url) {
   if (!btn) return;
 
-  // Clear any previous handler
-  btn.onclick = null;
-
+  // Always set state
   if (!url) {
     btn.setAttribute("aria-disabled", "true");
+    btn.style.pointerEvents = "none";
     return;
   }
 
   btn.removeAttribute("aria-disabled");
+  btn.style.pointerEvents = "auto";
+
+  // Avoid stacking handlers if you re-render
+  if (btn.__concertoBound) {
+    btn.__concertoUrl = url;
+    return;
+  }
+  btn.__concertoBound = true;
+  btn.__concertoUrl = url;
 
   const handler = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    openExternal(url);
+    openExternal(btn.__concertoUrl);
   };
 
-  // touchend is the most reliable “tap” event in in-app browsers
-  btn.addEventListener("touchend", handler, { passive: false, once: true });
-  btn.addEventListener("click", handler, { once: true });
+  // Most reliable in iOS webviews:
+  btn.addEventListener("touchend", handler, { passive: false });
+  btn.addEventListener("click", handler);
 }
 
 // ------------------------------
