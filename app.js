@@ -29,57 +29,118 @@ function saveCache() {
 }
 
 function cacheKey(artist, title) {
-  return `${(artist || "").trim().toLowerCase()}::${(title || "").trim().toLowerCase()}`;
+  return `${(artist || "").trim().toLowerCase()}::${(title || "")
+    .trim()
+    .toLowerCase()}`;
 }
 
 // ------------------------------
-// Open external (iOS WebView safe)
+// Open external (BuildFire/Cordova/iOS WebView safe)
 // ------------------------------
-function openExternal(url) {
+function openExternal(url, { preferSystem = true } = {}) {
   if (!url) return;
 
-  // BuildFire native (best + opens external browser/app)
-  if (window.buildfire?.navigation?.openWindow) {
-    // "_system" = external browser (Safari/Chrome) or external app when supported
-    buildfire.navigation.openWindow(url, "_system");
-    return;
-  }
+  // Prefer BuildFire external browser if available
+  try {
+    if (window.buildfire?.navigation?.openWindow) {
+      window.buildfire.navigation.openWindow(
+        url,
+        preferSystem ? "_system" : "_blank"
+      );
+      return;
+    }
+  } catch {}
 
-  // Fallback (regular browser)
-  const w = window.open(url, "_blank", "noopener,noreferrer");
+  // Cordova InAppBrowser (if present)
+  try {
+    if (window.cordova?.InAppBrowser?.open) {
+      window.cordova.InAppBrowser.open(url, preferSystem ? "_system" : "_blank");
+      return;
+    }
+  } catch {}
+
+  // Plain web fallback
+  const w = window.open(url, "_blank");
   if (!w) window.location.href = url;
 }
 
-function bindOneTapOpen(btn, url) {
-  if (!btn) return;
+// Apple Music: try to open the Music app first, then fallback to https
+function normalizeAppleUrl(url) {
+  if (!url) return null;
+  return String(url).replace("geo.music.apple.com", "music.apple.com");
+}
+function appleDeepLink(url) {
+  const http = normalizeAppleUrl(url);
+  if (!http) return null;
+  const itms = http.replace(/^https?:\/\//, "itms-apps://");
+  return { itms, http };
+}
 
-  // Always set state
+// One-tap helper (NO once:true, no accumulating listeners)
+function bindOneTapOpen(el, url, opts) {
+  if (!el) return;
+
+  // Store current url so rebinding doesn't stack
+  el.dataset.openUrl = url || "";
+
   if (!url) {
-    btn.setAttribute("aria-disabled", "true");
-    btn.style.pointerEvents = "none";
+    el.setAttribute("aria-disabled", "true");
+    el.disabled = true;
+    el.onclick = null;
+    el.ontouchend = null;
+    el.onpointerup = null;
     return;
   }
 
-  btn.removeAttribute("aria-disabled");
-  btn.style.pointerEvents = "auto";
+  el.removeAttribute("aria-disabled");
+  el.disabled = false;
 
-  // Avoid stacking handlers if you re-render
-  if (btn.__concertoBound) {
-    btn.__concertoUrl = url;
+  const handler = (e) => {
+    if (el.getAttribute("aria-disabled") === "true") return;
+    e.preventDefault();
+    e.stopPropagation();
+    openExternal(el.dataset.openUrl, opts);
+  };
+
+  // Use direct assignments so we overwrite old handlers (no stacking)
+  el.onclick = handler;
+  el.ontouchend = handler;
+  el.onpointerup = handler;
+}
+
+// Apple “one tap” (Music app first)
+function bindOneTapApple(el, appleUrl) {
+  if (!el) return;
+
+  const links = appleDeepLink(appleUrl);
+  if (!links) {
+    el.setAttribute("aria-disabled", "true");
+    el.disabled = true;
+    el.onclick = null;
+    el.ontouchend = null;
+    el.onpointerup = null;
     return;
   }
-  btn.__concertoBound = true;
-  btn.__concertoUrl = url;
+
+  el.removeAttribute("aria-disabled");
+  el.disabled = false;
 
   const handler = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    openExternal(btn.__concertoUrl);
+
+    // Attempt to open Music app
+    openExternal(links.itms, { preferSystem: true });
+
+    // Fallback to web if app-open fails silently in the webview
+    setTimeout(() => {
+      openExternal(links.http, { preferSystem: true });
+    }, 450);
   };
 
-  // Most reliable in iOS webviews:
-  btn.addEventListener("touchend", handler, { passive: false });
-  btn.addEventListener("click", handler);
+  el.onclick = handler;
+  el.ontouchend = handler;
+  el.onpointerup = handler;
 }
 
 // ------------------------------
@@ -216,7 +277,7 @@ function renderTourInfo(t) {
     ${
       t.tourWebsite
         ? `
-      <button class="tour-info-row tour-info-row--button" type="button" data-role="tour-website">
+      <button class="tour-info-row tour-info-row--button" type="button" data-role="tour-website" aria-disabled="false">
         <div class="tour-info-label">Tour Website</div>
         <div class="tour-info-value">Open</div>
       </button>
@@ -226,7 +287,8 @@ function renderTourInfo(t) {
   `;
 
   const btn = grid.querySelector('[data-role="tour-website"]');
-  if (btn && t.tourWebsite) bindOneTapOpen(btn, t.tourWebsite);
+  // Force external browser when possible
+  if (btn && t.tourWebsite) bindOneTapOpen(btn, t.tourWebsite, { preferSystem: true });
 }
 
 // ------------------------------
@@ -293,8 +355,9 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
 
   // Stop taps on buttons from collapsing the accordion
   dropdown.querySelectorAll("button.song-link-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => e.stopPropagation());
-    btn.addEventListener("touchend", (e) => e.stopPropagation(), { passive: true });
+    btn.onclick = (e) => e.stopPropagation();
+    btn.ontouchend = (e) => e.stopPropagation();
+    btn.onpointerup = (e) => e.stopPropagation();
   });
 
   const key = cacheKey(artist, title);
@@ -311,7 +374,7 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
     const payload = {
       spotifyUrl: songlink?.spotifyUrl || null,
       appleUrl: songlink?.appleUrl || null,
-      fetchedAt: Date.now()
+      fetchedAt: Date.now(),
     };
 
     cache[key] = payload;
@@ -324,15 +387,20 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
 }
 
 function applyLinks({ cached, appleBtn, spotifyBtn }) {
-  bindOneTapOpen(appleBtn, cached.appleUrl);
-  bindOneTapOpen(spotifyBtn, cached.spotifyUrl);
+  // Spotify: normal external open
+  bindOneTapOpen(spotifyBtn, cached.spotifyUrl, { preferSystem: true });
+
+  // Apple: attempt Music app first, then web fallback
+  bindOneTapApple(appleBtn, cached.appleUrl);
 }
 
 // ------------------------------
 // Netlify function API calls
 // ------------------------------
 async function apiSonglinkBySearch({ artist, title }) {
-  const url = `/.netlify/functions/songlink?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`;
+  const url = `/.netlify/functions/songlink?artist=${encodeURIComponent(
+    artist
+  )}&title=${encodeURIComponent(title)}`;
   const res = await fetch(url);
   return res.json();
 }
