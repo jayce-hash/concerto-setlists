@@ -600,3 +600,29 @@ a{ color:inherit; text-decoration:none; }
   .brand-logo{ width:92%; max-width:340px; }
   .feature-title{ font-size:26px; }
 }
+
+/* Make Tour Website (now an <a>) look + behave exactly like the Start Time pill */
+.tour-info-row.tour-info-row--link{
+  display:flex;               /* keep pill layout */
+  width:100%;
+  cursor:pointer;
+  text-decoration:none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Optional: subtle hover like your other pills */
+.tour-info-row.tour-info-row--link:hover{
+  background:#F5F7FB;
+}
+
+/* IMPORTANT: if any parent sets pointer-events weirdly, force these tappable */
+.tour-info-row.tour-info-row--link,
+.song-link-btn{
+  pointer-events:auto;
+}
+
+/* Disabled <a> state */
+.song-link-btn[aria-disabled="true"]{
+  pointer-events:none;
+}
