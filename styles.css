@@ -336,7 +336,7 @@ a{ color:inherit; text-decoration:none; }
 
 .browse-item-name{
   margin:0;
-  font-size:20px;
+  font-size:var(--fs-16);   /* MATCHES .info-empty h2 */
   font-weight:750;
   letter-spacing:.01em;
 }
