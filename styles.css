@@ -1,6 +1,7 @@
 /* ============================================================
    Concerto — Setlists & Tour Info (LIGHT MODE ONLY)
-   Festivals-aligned typography, spacing, cards
+   UPDATED: Flatter Setlist list (no inner “card”), no boxed index
+   (Built from your latest CSS + the new flat setlist edits)
    ============================================================ */
 
 :root{
@@ -336,7 +337,7 @@ a{ color:inherit; text-decoration:none; }
 
 .browse-item-name{
   margin:0;
-  font-size:var(--fs-16);   /* MATCHES .info-empty h2 */
+  font-size:var(--fs-16);
   font-weight:750;
   letter-spacing:.01em;
 }
@@ -385,49 +386,63 @@ a{ color:inherit; text-decoration:none; }
 }
 
 /* ============================================================
-   Setlist accordion — UNIFORM TYPOGRAPHY FIX
+   Setlist accordion — FLAT LIST (UPDATED)
+   Requires app.js header markup using <span> elements:
+   song-index, song-title, song-meta, song-chevron
    ============================================================ */
 
+/* Remove inner “card” feel: list sits directly under the section divider */
 .setlist-list{
-  border-radius:16px;
-  border:1px solid rgba(18,30,54,.08);
-  overflow:hidden;
-  background:#fff;
-  box-shadow:var(--shadow2);
+  background: transparent;
+  border: 0;
+  border-top: 1px solid rgba(18,30,54,.08);
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
 }
 
-.song-row{ border-bottom:1px solid rgba(18,30,54,.08); }
-.song-row:last-child{ border-bottom:none; }
+/* Row dividers */
+.song-row{
+  border-bottom:1px solid rgba(18,30,54,.08);
+}
+.song-row:last-child{
+  border-bottom:none;
+}
 
+/* Header becomes a clean row (no boxed index) */
 .song-row-header{
   width:100%;
-  padding:12px 12px;
+  padding:16px 2px;
   border:0;
-  background:#fff;
-  display:flex;
-  align-items:center;
+  background: transparent;
+  display:grid;
+  grid-template-columns: 26px 1fr auto 22px;
   gap:10px;
+  align-items:center;
   cursor:pointer;
   text-align:left;
-
-  /* Force Inter everywhere */
   font-family: var(--font);
+
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
 }
 
-.song-row-header:hover{ background:#F5F7FB; }
+.song-row-header:hover{
+  background: rgba(18,30,54,.03);
+}
 
+/* Index: just subtle aligned text (not a “container”) */
 .song-index{
-  width:24px;
-  flex:0 0 24px;
-  text-align:center;
-  font-size:var(--fs-13);
+  text-align:right;
+  font-size:var(--fs-12);
   color:var(--muted);
   font-weight:700;
   font-family: var(--font);
 }
 
+/* Title (same as before) */
 .song-title{
-  flex:1 1 auto;
   min-width:0;
   white-space:nowrap;
   overflow:hidden;
@@ -441,8 +456,8 @@ a{ color:inherit; text-decoration:none; }
   color: var(--ink);
 }
 
+/* Artist/meta right-aligned-ish */
 .song-meta{
-  flex:0 0 auto;
   white-space:nowrap;
 
   font-family: var(--font);
@@ -451,21 +466,21 @@ a{ color:inherit; text-decoration:none; }
   color: var(--muted);
 }
 
+/* Plus */
 .song-chevron{
-  margin-left:auto;
-  flex:0 0 auto;
-
+  text-align:right;
   font-family: var(--font);
-  font-size: var(--fs-12);
-  font-weight: 700;
+  font-size:16px;
+  font-weight:700;
   color: var(--muted);
 }
 
+/* Dropdown: no shaded panel; feels like it belongs to the row */
 .song-dropdown{
   display:none;
-  padding:12px;
-  background:rgba(18,30,54,.03);
-  border-top:1px solid rgba(18,30,54,.08);
+  padding: 0 0 14px 36px; /* indent under title, not under the number */
+  background: transparent;
+  border-top: 0;
 }
 
 .song-dropdown.open{ display:block; }
@@ -476,7 +491,7 @@ a{ color:inherit; text-decoration:none; }
   gap:10px;
 }
 
-/* Buttons — make BOTH Apple + Spotify LIGHT */
+/* Buttons — BOTH Apple + Spotify LIGHT */
 .song-link-btn{
   display:inline-flex;
   align-items:center;
@@ -491,7 +506,6 @@ a{ color:inherit; text-decoration:none; }
   box-shadow:var(--shadow2);
   transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
 
-  /* iOS tap feel */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   user-select: none;
@@ -603,7 +617,7 @@ a{ color:inherit; text-decoration:none; }
 
 /* Make Tour Website (now an <a>) look + behave exactly like the Start Time pill */
 .tour-info-row.tour-info-row--link{
-  display:flex;               /* keep pill layout */
+  display:flex;
   width:100%;
   cursor:pointer;
   text-decoration:none;
@@ -625,4 +639,9 @@ a{ color:inherit; text-decoration:none; }
 /* Disabled <a> state */
 .song-link-btn[aria-disabled="true"]{
   pointer-events:none;
+}
+
+/* Mobile: disable hover highlight (feels cleaner on iOS) */
+@media (hover: none){
+  .song-row-header:hover{ background: transparent; }
 }
