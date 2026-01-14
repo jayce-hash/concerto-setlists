@@ -163,18 +163,6 @@
     "setlist": []
   },
   {
-    "tourId": "fifa-world-cup-2026",
-    "tourName": "FIFA World Cup 2026",
-    "artist": "FIFA",
-    "year": 2026,
-    "showsCount": 0,
-    "startTimeLocal": "",
-    "tourWebsite": "https://www.fifa.com/fifaplus/en/tournaments/mens/worldcup/canada-mexico-usa2026",
-    "setlistStatus": "not_released",
-    "notes": "Event entry (no setlist). Add match data in the tour JSON file if needed.",
-    "setlist": []
-  },
-  {
     "tourId": "olivia-dean-the-art-of-loving-tour",
     "tourName": "The Art of Loving Tour",
     "artist": "Olivia Dean",
