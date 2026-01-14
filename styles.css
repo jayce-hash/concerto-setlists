@@ -664,3 +664,45 @@ a{ color:inherit; text-decoration:none; }
 @media (hover: none){
   .song-row-header:hover{ background: transparent; }
 }
+
+/* ============================================================
+   Tour Website pill — make it feel/tap like song-link-btn
+   ============================================================ */
+
+.tour-info-row.tour-info-row--link{
+  display:flex;
+  width:100%;
+  cursor:pointer;
+  text-decoration:none;
+
+  /* make it behave like a real tappable control in iOS */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+
+  /* ensure whole pill is clickable */
+  pointer-events: auto;
+  position: relative;
+}
+
+.tour-info-row.tour-info-row--link *{
+  pointer-events: none; /* prevents tapping on inner text from “missing” the <a> */
+}
+
+/* Match your button hover/press vibe */
+.tour-info-row.tour-info-row--link:hover{
+  background:#F5F7FB;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.tour-info-row.tour-info-row--link:active{
+  transform: translateY(0px);
+  box-shadow: var(--shadow2);
+  background:#EEF2FA;
+}
+
+/* Optional: make the "Open" value look more like a CTA */
+.tour-info-row.tour-info-row--link .tour-info-value{
+  font-weight: 750;
+}
