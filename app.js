@@ -215,12 +215,12 @@ function renderSetlist(tour) {
     const header = document.createElement("button");
     header.type = "button";
     header.className = "song-row-header";
-    header.innerHTML = `
-      <div class="song-index">${idx + 1}</div>
-      <div class="song-title">${escapeHtml(title)}</div>
-      <div class="song-meta">${escapeHtml(artist)}</div>
-      <div class="song-chevron">+</div>
-    `;
+header.innerHTML = `
+  <span class="song-index">${idx + 1}</span>
+  <span class="song-title">${escapeHtml(title)}</span>
+  <span class="song-meta">${escapeHtml(artist)}</span>
+  <span class="song-chevron">+</span>
+`;
 
     const dropdown = document.createElement("div");
     dropdown.className = "song-dropdown";
