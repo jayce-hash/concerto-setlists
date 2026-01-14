@@ -3,6 +3,7 @@
 // - Loads tours from /data/tours.json
 // - Renders library + search dropdown
 // - On tour select: renders Tour Info + Setlist accordion
+// - NOW: Each tour is its own mini-page via ?tour=TOUR_ID + back/forward support
 // - Auto-generates Spotify + Apple Music links via Netlify functions
 // ============================================================
 
@@ -43,6 +44,33 @@ function normalizeAppleUrl(url) {
 }
 
 // ------------------------------
+// Mini-page routing helpers (NEW)
+// ------------------------------
+function getTourSlug(t) {
+  // Your tours.json already uses tourId — use it as the URL slug.
+  return t?.tourId || "";
+}
+
+function getUrlTour() {
+  const url = new URL(window.location.href);
+  return url.searchParams.get("tour");
+}
+
+function setUrlTour(slugOrNull) {
+  const url = new URL(window.location.href);
+  if (slugOrNull) url.searchParams.set("tour", slugOrNull);
+  else url.searchParams.delete("tour");
+  window.history.pushState({ tourSlug: slugOrNull || null }, "", url.toString());
+}
+
+function setLibraryVisible(isVisible) {
+  // This exists in your Setlists HTML:
+  // <section class="browse-list"> ... </section>
+  const browse = document.querySelector(".browse-list");
+  if (browse) browse.style.display = isVisible ? "" : "none";
+}
+
+// ------------------------------
 // Data
 // ------------------------------
 async function loadTours() {
@@ -65,7 +93,7 @@ function renderLibrary(list) {
       <div class="browse-item-name">${escapeHtml(t.tourName)}</div>
       <div class="browse-item-meta">${escapeHtml(t.artist)}</div>
     `;
-    item.addEventListener("click", () => selectTour(t.tourId));
+    item.addEventListener("click", () => selectTour(t.tourId, { pushUrl: true }));
     wrap.appendChild(item);
   });
 }
@@ -82,9 +110,17 @@ function initSearch() {
     if (!q) {
       resultsEl.classList.remove("visible");
       resultsEl.innerHTML = "";
-      renderLibrary(state.tours);
+
+      // If not in a tour page, show full library
+      if (!state.selectedTour) {
+        setLibraryVisible(true);
+        renderLibrary(state.tours);
+      }
       return;
     }
+
+    // While searching, ensure library is visible
+    setLibraryVisible(true);
 
     const hits = state.tours.filter((t) => {
       return (
@@ -104,7 +140,9 @@ function initSearch() {
         input.value = "";
         resultsEl.classList.remove("visible");
         resultsEl.innerHTML = "";
-        selectTour(t.tourId);
+
+        // Navigate to the tour mini-page
+        selectTour(t.tourId, { pushUrl: true });
       });
       resultsEl.appendChild(r);
     });
@@ -139,11 +177,21 @@ function setDetailMode(isDetail) {
   }
 }
 
-function selectTour(tourId) {
+/**
+ * @param {string} tourId
+ * @param {{pushUrl?: boolean}} opts
+ */
+function selectTour(tourId, opts = {}) {
+  const { pushUrl = false } = opts;
+
   const tour = state.tours.find((t) => t.tourId === tourId);
   if (!tour) return;
 
   state.selectedTour = tour;
+
+  // MINI PAGE: set URL and hide library (NEW)
+  if (pushUrl) setUrlTour(getTourSlug(tour));
+  setLibraryVisible(false);
 
   el("tourName").textContent = tour.tourName;
   el("tourArtist").textContent = tour.artist;
@@ -155,9 +203,17 @@ function selectTour(tourId) {
   setDetailMode(true);
 
   el("backToLibrary").onclick = () => {
+    // Clear selected tour
     state.selectedTour = null;
+
+    // Back to library mini-page root (NEW)
+    setUrlTour(null);
+    setLibraryVisible(true);
+
+    // Restore UI
     setDetailMode(false);
     renderLibrary(state.tours);
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -215,16 +271,16 @@ function renderSetlist(tour) {
     const header = document.createElement("button");
     header.type = "button";
     header.className = "song-row-header";
-header.innerHTML = `
-  <span class="song-index">${idx + 1}</span>
-  <span class="song-title">${escapeHtml(title)}</span>
-  <span class="song-meta">${escapeHtml(artist)}</span>
-  <span class="song-chevron">+</span>
-`;
+
+    header.innerHTML = `
+      <span class="song-index">${idx + 1}</span>
+      <span class="song-title">${escapeHtml(title)}</span>
+      <span class="song-meta">${escapeHtml(artist)}</span>
+      <span class="song-chevron">+</span>
+    `;
 
     const dropdown = document.createElement("div");
     dropdown.className = "song-dropdown";
-    // IMPORTANT: <a> links (iframe-safe) instead of <button> + JS open
     dropdown.innerHTML = `
       <div class="song-links">
         <a class="song-link-btn" data-role="apple" href="#" target="_blank" rel="noopener" aria-disabled="true">
@@ -338,6 +394,35 @@ function escapeHtml(str) {
     renderLibrary(state.tours);
     initSearch();
     setDetailMode(false);
+    setLibraryVisible(true);
+
+    // NEW: Enter from direct link ?tour=...
+    const slug = getUrlTour();
+    if (slug) {
+      const match = state.tours.find((t) => getTourSlug(t) === slug);
+      if (match) {
+        selectTour(match.tourId, { pushUrl: false }); // already in URL
+      }
+    }
+
+    // NEW: Back/forward support
+    window.addEventListener("popstate", () => {
+      const slugNow = getUrlTour();
+
+      if (!slugNow) {
+        // Library mode
+        state.selectedTour = null;
+        setDetailMode(false);
+        setLibraryVisible(true);
+        renderLibrary(state.tours);
+        return;
+      }
+
+      const match = state.tours.find((t) => getTourSlug(t) === slugNow);
+      if (match) {
+        selectTour(match.tourId, { pushUrl: false });
+      }
+    });
   } catch (e) {
     console.error(e);
     const panel = el("infoPanel");
