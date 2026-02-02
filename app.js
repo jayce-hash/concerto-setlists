@@ -3,7 +3,7 @@
 // - Loads tours from /data/tours.json
 // - Renders library + search dropdown
 // - On tour select: renders Tour Info + Setlist accordion
-// - NOW: Each tour is its own mini-page via ?tour=TOUR_ID + back/forward support
+// - Each tour is its own mini-page via ?tour=TOUR_ID + back/forward support
 // - Auto-generates Spotify + Apple Music links via Netlify functions
 // ============================================================
 
@@ -17,6 +17,14 @@ const state = {
 const CACHE_KEY = "concerto_setlist_cache_v1";
 // cache format: { "<artist>::<title>": { spotifyUrl, appleUrl, fetchedAt } }
 const cache = loadCache();
+
+// NEW: preserve library scroll position so back feels native
+let libraryScrollY = 0;
+
+// NEW: prevent browser scroll restore (helps iOS WebViews)
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
 
 function loadCache() {
   try {
@@ -44,10 +52,9 @@ function normalizeAppleUrl(url) {
 }
 
 // ------------------------------
-// Mini-page routing helpers (NEW)
+// Mini-page routing helpers
 // ------------------------------
 function getTourSlug(t) {
-  // Your tours.json already uses tourId — use it as the URL slug.
   return t?.tourId || "";
 }
 
@@ -64,10 +71,50 @@ function setUrlTour(slugOrNull) {
 }
 
 function setLibraryVisible(isVisible) {
-  // This exists in your Setlists HTML:
-  // <section class="browse-list"> ... </section>
   const browse = document.querySelector(".browse-list");
   if (browse) browse.style.display = isVisible ? "" : "none";
+}
+
+// ------------------------------
+// Detail mode (NEW)
+// ------------------------------
+function setPageDetailMode(isDetail) {
+  document.body.classList.toggle("tour-detail", !!isDetail);
+}
+
+function setDetailMode(isDetail) {
+  const panel = el("infoPanel");
+  const empty = panel.querySelector(".info-empty");
+  const content = panel.querySelector(".info-content");
+
+  if (isDetail) {
+    panel.classList.remove("info-panel--empty");
+    empty.style.display = "none";
+    content.hidden = false;
+  } else {
+    panel.classList.add("info-panel--empty");
+    empty.style.display = "block";
+    content.hidden = true;
+  }
+}
+
+// ------------------------------
+// Scroll helpers (NEW)
+// ------------------------------
+function scrollToTopInstant() {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    });
+  });
+}
+
+function restoreLibraryScrollInstant() {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: libraryScrollY || 0, left: 0, behavior: "auto" });
+    });
+  });
 }
 
 // ------------------------------
@@ -96,6 +143,10 @@ function renderLibrary(list) {
     item.addEventListener("click", () => selectTour(t.tourId, { pushUrl: true }));
     wrap.appendChild(item);
   });
+
+  // Optional library count (matches your Featured Tours behavior)
+  const metaEl = el("libraryMeta");
+  if (metaEl) metaEl.textContent = list?.length ? `${list.length} tours` : "";
 }
 
 // ------------------------------
@@ -104,9 +155,21 @@ function renderLibrary(list) {
 function initSearch() {
   const input = el("tourSearch");
   const resultsEl = el("searchResults");
+  const clearBtn = el("clearSearchBtn");
+
+  if (clearBtn && input) {
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      input.dispatchEvent(new Event("input"));
+      resultsEl.classList.remove("visible");
+      resultsEl.innerHTML = "";
+      input.focus();
+    });
+  }
 
   input.addEventListener("input", () => {
     const q = input.value.trim().toLowerCase();
+
     if (!q) {
       resultsEl.classList.remove("visible");
       resultsEl.innerHTML = "";
@@ -140,8 +203,6 @@ function initSearch() {
         input.value = "";
         resultsEl.classList.remove("visible");
         resultsEl.innerHTML = "";
-
-        // Navigate to the tour mini-page
         selectTour(t.tourId, { pushUrl: true });
       });
       resultsEl.appendChild(r);
@@ -161,22 +222,6 @@ function initSearch() {
 // ------------------------------
 // Tour selection + detail view
 // ------------------------------
-function setDetailMode(isDetail) {
-  const panel = el("infoPanel");
-  const empty = panel.querySelector(".info-empty");
-  const content = panel.querySelector(".info-content");
-
-  if (isDetail) {
-    panel.classList.remove("info-panel--empty");
-    empty.style.display = "none";
-    content.hidden = false;
-  } else {
-    panel.classList.add("info-panel--empty");
-    empty.style.display = "block";
-    content.hidden = true;
-  }
-}
-
 /**
  * @param {string} tourId
  * @param {{pushUrl?: boolean}} opts
@@ -187,11 +232,20 @@ function selectTour(tourId, opts = {}) {
   const tour = state.tours.find((t) => t.tourId === tourId);
   if (!tour) return;
 
+  // NEW: store library scroll before we hide the library
+  // only when coming from the library (not deep link)
+  if (!state.selectedTour) {
+    libraryScrollY = window.scrollY || 0;
+  }
+
   state.selectedTour = tour;
 
-  // MINI PAGE: set URL and hide library (NEW)
+  // MINI PAGE: set URL and hide library
   if (pushUrl) setUrlTour(getTourSlug(tour));
   setLibraryVisible(false);
+
+  // NEW: enable page-level detail mode (hides header/search)
+  setPageDetailMode(true);
 
   el("tourName").textContent = tour.tourName;
   el("tourArtist").textContent = tour.artist;
@@ -202,26 +256,33 @@ function selectTour(tourId, opts = {}) {
 
   setDetailMode(true);
 
-  el("backToLibrary").onclick = () => {
-    // Clear selected tour
-    state.selectedTour = null;
+  const backBtn = el("backToLibrary");
+  backBtn.onclick = () => goBackToLibrary();
 
-    // Back to library mini-page root (NEW)
-    setUrlTour(null);
-    setLibraryVisible(true);
+  // NEW: always land at top like a real profile page
+  scrollToTopInstant();
+}
 
-    // Restore UI
-    setDetailMode(false);
-    renderLibrary(state.tours);
+function goBackToLibrary() {
+  // Clear selected tour
+  state.selectedTour = null;
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  // Back to library mini-page root
+  setUrlTour(null);
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  // Restore UI
+  setPageDetailMode(false);
+  setDetailMode(false);
+
+  setLibraryVisible(true);
+  renderLibrary(state.tours);
+
+  // NEW: restore scroll to where they were in the grid
+  restoreLibraryScrollInstant();
 }
 
 // ------------------------------
-// Tour Info (IMPORTANT: use <a>, not <button>)
+// Tour Info (use <a>, not <button>)
 // ------------------------------
 function renderTourInfo(t) {
   const grid = el("tourInfoGrid");
@@ -310,7 +371,7 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
   const appleBtn = dropdown.querySelector('[data-role="apple"]');
   const spotifyBtn = dropdown.querySelector('[data-role="spotify"]');
 
-  // Prevent link taps from toggling/closing the accordion (but DO NOT prevent default)
+  // Prevent link taps from toggling/closing the accordion
   dropdown.querySelectorAll("a.song-link-btn").forEach((a) => {
     a.addEventListener("click", (e) => e.stopPropagation(), true);
   });
@@ -393,10 +454,13 @@ function escapeHtml(str) {
     state.tours = await loadTours();
     renderLibrary(state.tours);
     initSearch();
+
+    // default: library
+    setPageDetailMode(false);
     setDetailMode(false);
     setLibraryVisible(true);
 
-    // NEW: Enter from direct link ?tour=...
+    // Enter from direct link ?tour=...
     const slug = getUrlTour();
     if (slug) {
       const match = state.tours.find((t) => getTourSlug(t) === slug);
@@ -405,16 +469,18 @@ function escapeHtml(str) {
       }
     }
 
-    // NEW: Back/forward support
+    // Back/forward support
     window.addEventListener("popstate", () => {
       const slugNow = getUrlTour();
 
       if (!slugNow) {
         // Library mode
         state.selectedTour = null;
+        setPageDetailMode(false);
         setDetailMode(false);
         setLibraryVisible(true);
         renderLibrary(state.tours);
+        restoreLibraryScrollInstant();
         return;
       }
 
