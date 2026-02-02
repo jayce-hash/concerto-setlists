@@ -706,3 +706,38 @@ a{ color:inherit; text-decoration:none; }
 .tour-info-row.tour-info-row--link .tour-info-value{
   font-weight: 750;
 }
+
+/* ============================================================
+   Setlists — DETAIL MODE (hide header text + search area)
+   ============================================================ */
+
+body.tour-detail .feature-title,
+body.tour-detail .tagline,
+body.tour-detail .header-actions,
+body.tour-detail .hero{
+  display:none !important;
+}
+
+/* tighten header spacing in detail mode */
+body.tour-detail .page-header{
+  padding: 10px 0 8px !important;
+}
+
+body.tour-detail .page-header-inner{
+  gap: 0 !important;
+}
+
+/* pull profile content up closer to the logo */
+body.tour-detail .container{
+  padding-top: 10px !important;
+}
+
+body.tour-detail .info-content{
+  margin-top: 10px !important;
+}
+
+/* optional: slightly smaller logo on detail pages */
+body.tour-detail .brand-logo{
+  width: 82% !important;
+  max-width: 300px !important;
+}
