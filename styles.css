@@ -1,4 +1,4 @@
- /* ============================================================
+/* ============================================================
    Concerto — Setlists & Tour Info (LIGHT MODE ONLY)
    UPDATED v3:
    - Setlist: cleaner separators (no wonky double/inset lines)
@@ -363,6 +363,7 @@ a{ color:inherit; text-decoration:none; }
   gap:10px;
 }
 
+/* Base pill style (applies to both the normal div row + the <a> row) */
 .tour-info-row{
   display:flex;
   align-items:flex-start;
@@ -391,11 +392,6 @@ a{ color:inherit; text-decoration:none; }
 
 /* ============================================================
    Setlist accordion — CLEAN LIST v3
-   Notes:
-   - We “full-bleed” the list inside the Setlist card by canceling
-     .section-body horizontal padding (prevents inset/double lines).
-   - Hides .song-meta
-   - Titles wrap (no ellipsis)
    ============================================================ */
 
 /* Make the list span full width of the card so dividers look clean */
@@ -426,7 +422,7 @@ a{ color:inherit; text-decoration:none; }
 /* Header: index | title | plus (artist hidden) */
 .song-row-header{
   width:100%;
-  padding: 14px 16px;         /* put spacing on the row itself */
+  padding: 14px 16px;
   border:0;
   background: transparent;
 
@@ -472,7 +468,6 @@ a{ color:inherit; text-decoration:none; }
   overflow: visible;
   text-overflow: clip;
 
-  /* show up to 2 lines for consistency (remove if you want unlimited) */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -497,7 +492,7 @@ a{ color:inherit; text-decoration:none; }
 /* Dropdown aligned under title */
 .song-dropdown{
   display:none;
-  padding: 0 16px 14px 50px;  /* 22 index + 12 gap + title start */
+  padding: 0 16px 14px 50px;
   background: transparent;
   border: 0;
 }
@@ -543,12 +538,13 @@ a{ color:inherit; text-decoration:none; }
   border-color:var(--line);
 }
 
-/* Disabled state */
+/* Disabled state (visual only) */
 .song-link-btn[aria-disabled="true"]{
   opacity:.55;
   cursor:not-allowed;
   transform:none;
   box-shadow:var(--shadow2);
+  pointer-events:none; /* keep Apple/Spotify behavior PERFECT */
 }
 
 /* ============================================================
@@ -634,77 +630,47 @@ a{ color:inherit; text-decoration:none; }
   .feature-title{ font-size:26px; }
 }
 
-/* Make Tour Website (now an <a>) look + behave exactly like the Start Time pill */
-.tour-info-row.tour-info-row--link{
-  display:flex;
-  width:100%;
-  cursor:pointer;
-  text-decoration:none;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-/* Optional: subtle hover like your other pills */
-.tour-info-row.tour-info-row--link:hover{
-  background:#F5F7FB;
-}
-
-/* IMPORTANT: if any parent sets pointer-events weirdly, force these tappable */
-.tour-info-row.tour-info-row--link,
-.song-link-btn{
-  pointer-events:auto;
-}
-
-/* Disabled <a> state */
-.song-link-btn[aria-disabled="true"]{
-  pointer-events:none;
-}
-
 /* Mobile: disable hover highlight (feels cleaner on iOS) */
 @media (hover: none){
   .song-row-header:hover{ background: transparent; }
 }
 
 /* ============================================================
-   Tour Website pill — make it feel/tap like song-link-btn
+   Tour Website pill — iOS-safe, fully tappable <a>
+   ONLY affects: <a class="tour-info-row tour-info-row--link">
    ============================================================ */
 
-.tour-info-row.tour-info-row--link{
-  display:flex;
-  width:100%;
+a.tour-info-row.tour-info-row--link{
   cursor:pointer;
   text-decoration:none;
 
-  /* make it behave like a real tappable control in iOS */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   user-select: none;
 
-  /* ensure whole pill is clickable */
-  pointer-events: auto;
-  position: relative;
+  pointer-events:auto;
+  position:relative;
 }
 
-.tour-info-row.tour-info-row--link *{
-  pointer-events: none; /* prevents tapping on inner text from “missing” the <a> */
+/* Ensure tapping inner text still triggers the <a> */
+a.tour-info-row.tour-info-row--link > *{
+  pointer-events:none;
 }
 
-/* Match your button hover/press vibe */
-.tour-info-row.tour-info-row--link:hover{
+a.tour-info-row.tour-info-row--link:hover{
   background:#F5F7FB;
   transform: translateY(-1px);
   box-shadow: var(--shadow);
 }
 
-.tour-info-row.tour-info-row--link:active{
+a.tour-info-row.tour-info-row--link:active{
   transform: translateY(0px);
   box-shadow: var(--shadow2);
   background:#EEF2FA;
 }
 
-/* Optional: make the "Open" value look more like a CTA */
-.tour-info-row.tour-info-row--link .tour-info-value{
-  font-weight: 750;
+a.tour-info-row.tour-info-row--link .tour-info-value{
+  font-weight:750;
 }
 
 /* ============================================================
