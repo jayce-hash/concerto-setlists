@@ -52,6 +52,17 @@ function normalizeAppleUrl(url) {
 }
 
 // ------------------------------
+// URL normalization (NEW - for Tour Website)
+// ------------------------------
+function normalizeExternalUrl(url) {
+  if (!url) return null;
+  const u = String(url).trim();
+  if (!u) return null;
+  if (!/^https?:\/\//i.test(u)) return `https://${u}`;
+  return u;
+}
+
+// ------------------------------
 // Mini-page routing helpers
 // ------------------------------
 function getTourSlug(t) {
@@ -76,7 +87,7 @@ function setLibraryVisible(isVisible) {
 }
 
 // ------------------------------
-// Detail mode (NEW)
+// Detail mode
 // ------------------------------
 function setPageDetailMode(isDetail) {
   document.body.classList.toggle("tour-detail", !!isDetail);
@@ -99,7 +110,7 @@ function setDetailMode(isDetail) {
 }
 
 // ------------------------------
-// Scroll helpers (NEW)
+// Scroll helpers
 // ------------------------------
 function scrollToTopInstant() {
   requestAnimationFrame(() => {
@@ -144,7 +155,7 @@ function renderLibrary(list) {
     wrap.appendChild(item);
   });
 
-  // Optional library count (matches your Featured Tours behavior)
+  // Optional library count
   const metaEl = el("libraryMeta");
   if (metaEl) metaEl.textContent = list?.length ? `${list.length} tours` : "";
 }
@@ -174,7 +185,6 @@ function initSearch() {
       resultsEl.classList.remove("visible");
       resultsEl.innerHTML = "";
 
-      // If not in a tour page, show full library
       if (!state.selectedTour) {
         setLibraryVisible(true);
         renderLibrary(state.tours);
@@ -182,7 +192,6 @@ function initSearch() {
       return;
     }
 
-    // While searching, ensure library is visible
     setLibraryVisible(true);
 
     const hits = state.tours.filter((t) => {
@@ -232,19 +241,16 @@ function selectTour(tourId, opts = {}) {
   const tour = state.tours.find((t) => t.tourId === tourId);
   if (!tour) return;
 
-  // NEW: store library scroll before we hide the library
-  // only when coming from the library (not deep link)
+  // store library scroll before hide (only when coming from library)
   if (!state.selectedTour) {
     libraryScrollY = window.scrollY || 0;
   }
 
   state.selectedTour = tour;
 
-  // MINI PAGE: set URL and hide library
   if (pushUrl) setUrlTour(getTourSlug(tour));
   setLibraryVisible(false);
 
-  // NEW: enable page-level detail mode (hides header/search)
   setPageDetailMode(true);
 
   el("tourName").textContent = tour.tourName;
@@ -259,39 +265,35 @@ function selectTour(tourId, opts = {}) {
   const backBtn = el("backToLibrary");
   backBtn.onclick = () => goBackToLibrary();
 
-  // NEW: always land at top like a real profile page
   scrollToTopInstant();
 }
 
 function goBackToLibrary() {
-  // Clear selected tour
   state.selectedTour = null;
-
-  // Back to library mini-page root
   setUrlTour(null);
 
-  // Restore UI
   setPageDetailMode(false);
   setDetailMode(false);
 
   setLibraryVisible(true);
   renderLibrary(state.tours);
 
-  // NEW: restore scroll to where they were in the grid
   restoreLibraryScrollInstant();
 }
 
 // ------------------------------
 // Tour Info (use <a>, not <button>)
+// ✅ FIX: force Tour Website pill to open on single tap in iOS WebView
 // ------------------------------
 function renderTourInfo(t) {
   const grid = el("tourInfoGrid");
+  const website = normalizeExternalUrl(t.tourWebsite);
 
-  const websiteRow = t.tourWebsite
+  const websiteRow = website
     ? `
       <a class="tour-info-row tour-info-row--link"
-         href="${escapeHtml(t.tourWebsite)}"
-         target="_blank"
+         href="${escapeHtml(website)}"
+         data-role="tour-website"
          rel="noopener">
         <div class="tour-info-label">Tour Website</div>
         <div class="tour-info-value">Open</div>
@@ -306,6 +308,22 @@ function renderTourInfo(t) {
     </div>
     ${websiteRow}
   `;
+
+  // iOS WebView fix: "tap" must navigate; otherwise it becomes long-press preview
+  const link = grid.querySelector('a[data-role="tour-website"]');
+  if (link) {
+    link.addEventListener(
+      "click",
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Open inside this same WebView (most reliable for BuildFire)
+        window.location.href = link.getAttribute("href");
+      },
+      true
+    );
+  }
 }
 
 // ------------------------------
@@ -474,7 +492,6 @@ function escapeHtml(str) {
       const slugNow = getUrlTour();
 
       if (!slugNow) {
-        // Library mode
         state.selectedTour = null;
         setPageDetailMode(false);
         setDetailMode(false);
