@@ -1,26 +1,12 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Concerto · Setlists & Tour Info</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-
-  <!-- Fonts -->
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" /><!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="./styles.css" />
-</head>
-
-<body>
-  <!-- Night Mode Toggle -->
-  <button id="nightModeToggle" type="button" aria-label="Toggle night mode">
-    🌙
-  </button>
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="./styles.css" />
+</head><body>
   <header class="page-header">
     <div class="page-header-inner">
       <img
@@ -29,7 +15,6 @@
         class="brand-logo"
       />
 
-```
   <h1 class="feature-title">Setlists &amp; Tour Info</h1>
   <p class="tagline">Pick a tour. Get the setlist—instantly.</p>
 
@@ -37,11 +22,9 @@
     <a class="btn-ghost" href="#" id="openHelp">How it works</a>
   </div>
 </div>
-```
 
-  </header>
 
-  <main class="container">
+</header><main class="container">
     <!-- Search -->
     <section class="hero">
       <div class="search-row">
@@ -56,7 +39,6 @@
         </div>
       </div>
 
-```
   <!-- Keep dropdown (JS uses it) -->
   <div id="searchResults" class="search-results"></div>
 </section>
@@ -123,13 +105,9 @@
     <div id="toursBrowseList" class="grid"></div>
   </section>
 </section>
-```
 
-  </main>
 
-  <!-- Help modal -->
-
-  <div class="modal" id="modal" hidden>
+</main><!-- Help modal --><div class="modal" id="modal" hidden>
     <div class="modal-backdrop" id="modalClose"></div>
     <div class="modal-card">
       <div class="modal-title">How Setlists Works</div>
@@ -145,11 +123,7 @@
         <button class="primary-btn" id="modalOk">Got it</button>
       </div>
     </div>
-  </div>
-
-  <script src="./app.js" defer></script>
-
-  <script>
+  </div><script src="./app.js" defer></script><script>
     window.addEventListener("DOMContentLoaded", () => {
       const openHelp = document.getElementById("openHelp");
       const modal = document.getElementById("modal");
@@ -163,7 +137,5 @@
       close?.addEventListener("click", closeM);
       ok?.addEventListener("click", closeM);
     });
-  </script>
-
-</body>
+  </script></body>
 </html>
