@@ -14,10 +14,6 @@
 </head>
 
 <body>
-
-  <!-- =========================
-       Header
-  ========================== -->
   <header class="page-header">
     <div class="page-header-inner">
       <img
@@ -27,7 +23,7 @@
       />
 
       <h1 class="feature-title">Setlists &amp; Tour Info</h1>
-      <p class="tagline">Pick a tour. Get the setlist instantly.</p>
+      <p class="tagline">Pick a tour. Get the setlist—instantly.</p>
 
       <div class="header-actions">
         <a class="btn-ghost" href="#" id="openHelp">How it works</a>
@@ -35,12 +31,8 @@
     </div>
   </header>
 
-  <!-- =========================
-       Main
-  ========================== -->
   <main class="container">
-
-    <!-- Search Section -->
+    <!-- Search -->
     <section class="hero">
       <div class="search-row">
         <div class="search">
@@ -50,39 +42,28 @@
             placeholder="Search tours or artists"
             autocomplete="off"
           />
-          <button
-            id="clearSearchBtn"
-            class="icon-btn"
-            title="Clear"
-            aria-label="Clear search">
-            ×
-          </button>
+          <button id="clearSearchBtn" class="icon-btn" title="Clear" aria-label="Clear">×</button>
         </div>
       </div>
 
+      <!-- Keep dropdown (JS uses it) -->
       <div id="searchResults" class="search-results"></div>
     </section>
 
-    <!-- Info Panel -->
+    <!-- Main panel -->
     <section id="infoPanel" class="info-panel info-panel--empty">
-
-      <!-- Empty State -->
+      <!-- Empty state -->
       <div class="info-empty">
         <h2>Browse Tours</h2>
         <p>
-          Search above or pick one below. If a setlist is available,
-          tap songs to generate Apple Music and Spotify links automatically.
+          Search above or pick one below. If a setlist is available, tap songs to generate
+          Apple Music and Spotify links automatically.
         </p>
       </div>
 
-      <!-- Detail Mode -->
+      <!-- Detail mode -->
       <div class="info-content" hidden>
-
-        <button
-          id="backToLibrary"
-          class="back-btn"
-          type="button"
-          aria-label="Back to Tour Library">
+        <button id="backToLibrary" class="back-btn" type="button" aria-label="Back to Tour Library">
           ← Tour Library
         </button>
 
@@ -95,8 +76,6 @@
         </header>
 
         <div class="info-cards">
-
-          <!-- Tour Info -->
           <article class="info-card">
             <div class="section-head">
               <div>
@@ -109,7 +88,6 @@
             </div>
           </article>
 
-          <!-- Setlist -->
           <article class="info-card">
             <div class="section-head">
               <div>
@@ -121,26 +99,22 @@
               <div id="setlistList" class="setlist-list"></div>
             </div>
           </article>
-
         </div>
       </div>
 
-      <!-- Library Grid -->
+      <!-- Library -->
       <section class="browse-list">
         <div class="grid-head">
           <div class="muted" id="libraryMeta"></div>
           <div class="right"></div>
         </div>
+
         <div id="toursBrowseList" class="grid"></div>
       </section>
-
     </section>
-
   </main>
 
-  <!-- =========================
-       Help Modal
-  ========================== -->
+  <!-- Help modal -->
   <div class="modal" id="modal" hidden>
     <div class="modal-backdrop" id="modalClose"></div>
     <div class="modal-card">
@@ -150,7 +124,7 @@
           <li>Browse or search tours.</li>
           <li>Tap a tour to open the details page.</li>
           <li>If a setlist is available, tap songs to get links.</li>
-          <li>Apple Music and Spotify links generate automatically.</li>
+          <li>Apple Music + Spotify links generate automatically.</li>
         </ul>
       </div>
       <div class="modal-actions">
@@ -159,8 +133,8 @@
     </div>
   </div>
 
-  <!-- Scripts -->
   <script src="./app.js" defer></script>
+
   <script>
     window.addEventListener("DOMContentLoaded", () => {
       const openHelp = document.getElementById("openHelp");
@@ -168,20 +142,13 @@
       const close = document.getElementById("modalClose");
       const ok = document.getElementById("modalOk");
 
-      function openM(e) {
-        e?.preventDefault?.();
-        modal.hidden = false;
-      }
-
-      function closeM() {
-        modal.hidden = true;
-      }
+      function openM(e){ e?.preventDefault?.(); modal.hidden = false; }
+      function closeM(){ modal.hidden = true; }
 
       openHelp?.addEventListener("click", openM);
       close?.addEventListener("click", closeM);
       ok?.addEventListener("click", closeM);
     });
   </script>
-
 </body>
 </html>
