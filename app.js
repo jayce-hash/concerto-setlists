@@ -5,29 +5,21 @@
 // - On tour select: renders Tour Info + Setlist accordion
 // - Each tour is its own mini-page via ?tour=TOUR_ID + back/forward support
 // - Auto-generates Spotify + Apple Music links via Netlify functions
-// - Night mode toggle with localStorage persistence
 // ============================================================
-
 const el = (id) => document.getElementById(id);
-
 const state = {
 tours: [],
 selectedTour: null,
 };
-
 const CACHE_KEY = “concerto_setlist_cache_v1”;
-const THEME_KEY = “concerto_theme”;
 // cache format: { “<artist>::<title>”: { spotifyUrl, appleUrl, fetchedAt } }
 const cache = loadCache();
-
 // NEW: preserve library scroll position so back feels native
 let libraryScrollY = 0;
-
 // NEW: prevent browser scroll restore (helps iOS WebViews)
 if (“scrollRestoration” in history) {
 history.scrollRestoration = “manual”;
 }
-
 function loadCache() {
 try {
 return JSON.parse(localStorage.getItem(CACHE_KEY) || “{}”);
@@ -38,37 +30,9 @@ return {};
 function saveCache() {
 localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
 }
-
 function cacheKey(artist, title) {
-return `${(artist || "").trim().toLowerCase()}::${(title || "") .trim() .toLowerCase()}`;
+return ${(artist || "").trim().toLowerCase()}::${(title || "") .trim() .toLowerCase()};
 }
-
-// ——————————
-// Night Mode Functions
-// ——————————
-function initTheme() {
-const savedTheme = localStorage.getItem(THEME_KEY) || “light”;
-document.documentElement.setAttribute(“data-theme”, savedTheme);
-updateToggleButton(savedTheme);
-}
-
-function toggleTheme() {
-const current = document.documentElement.getAttribute(“data-theme”);
-const newTheme = current === “night” ? “light” : “night”;
-
-document.documentElement.setAttribute(“data-theme”, newTheme);
-localStorage.setItem(THEME_KEY, newTheme);
-updateToggleButton(newTheme);
-}
-
-function updateToggleButton(theme) {
-const button = document.getElementById(“nightModeToggle”);
-if (button) {
-button.textContent = theme === “night” ? “☀️” : “🌙”;
-button.setAttribute(“aria-label”, `Switch to ${theme === "night" ? "light" : "night"} mode`);
-}
-}
-
 // ——————————
 // Apple Music URL cleanup
 // ——————————
@@ -76,7 +40,6 @@ function normalizeAppleUrl(url) {
 if (!url) return null;
 return String(url).replace(“geo.music.apple.com”, “music.apple.com”);
 }
-
 // ——————————
 // URL normalization (NEW - for Tour Website)
 // ——————————
@@ -84,46 +47,39 @@ function normalizeExternalUrl(url) {
 if (!url) return null;
 const u = String(url).trim();
 if (!u) return null;
-if (!/^https?:///i.test(u)) return `https://${u}`;
+if (!/^https?:///i.test(u)) return https://${u};
 return u;
 }
-
 // ——————————
 // Mini-page routing helpers
 // ——————————
 function getTourSlug(t) {
 return t?.tourId || “”;
 }
-
 function getUrlTour() {
 const url = new URL(window.location.href);
 return url.searchParams.get(“tour”);
 }
-
 function setUrlTour(slugOrNull) {
 const url = new URL(window.location.href);
 if (slugOrNull) url.searchParams.set(“tour”, slugOrNull);
 else url.searchParams.delete(“tour”);
 window.history.pushState({ tourSlug: slugOrNull || null }, “”, url.toString());
 }
-
 function setLibraryVisible(isVisible) {
 const browse = document.querySelector(”.browse-list”);
 if (browse) browse.style.display = isVisible ? “” : “none”;
 }
-
 // ——————————
 // Detail mode
 // ——————————
 function setPageDetailMode(isDetail) {
 document.body.classList.toggle(“tour-detail”, !!isDetail);
 }
-
 function setDetailMode(isDetail) {
 const panel = el(“infoPanel”);
 const empty = panel.querySelector(”.info-empty”);
 const content = panel.querySelector(”.info-content”);
-
 if (isDetail) {
 panel.classList.remove(“info-panel–empty”);
 empty.style.display = “none”;
@@ -134,7 +90,6 @@ empty.style.display = “block”;
 content.hidden = true;
 }
 }
-
 // ——————————
 // Scroll helpers
 // ——————————
@@ -145,7 +100,6 @@ window.scrollTo({ top: 0, left: 0, behavior: “auto” });
 });
 });
 }
-
 function restoreLibraryScrollInstant() {
 requestAnimationFrame(() => {
 requestAnimationFrame(() => {
@@ -153,7 +107,6 @@ window.scrollTo({ top: libraryScrollY || 0, left: 0, behavior: “auto” });
 });
 });
 }
-
 // ——————————
 // Data
 // ——————————
@@ -162,27 +115,23 @@ const res = await fetch(”./data/tours.json”, { cache: “no-store” });
 if (!res.ok) throw new Error(“Failed to load tours.json”);
 return res.json();
 }
-
 // ——————————
 // Library rendering
 // ——————————
 function renderLibrary(list) {
 const wrap = el(“toursBrowseList”);
 wrap.innerHTML = “”;
-
 list.forEach((t) => {
 const item = document.createElement(“div”);
 item.className = “browse-item”;
-item.innerHTML = `<div class="browse-item-name">${escapeHtml(t.tourName)}</div> <div class="browse-item-meta">${escapeHtml(t.artist)}</div>`;
+item.innerHTML = <div class="browse-item-name">${escapeHtml(t.tourName)}</div> <div class="browse-item-meta">${escapeHtml(t.artist)}</div>;
 item.addEventListener(“click”, () => selectTour(t.tourId, { pushUrl: true }));
 wrap.appendChild(item);
 });
-
 // Optional library count
 const metaEl = el(“libraryMeta”);
-if (metaEl) metaEl.textContent = list?.length ? `${list.length} tours` : “”;
+if (metaEl) metaEl.textContent = list?.length ? ${list.length} tours : “”;
 }
-
 // ——————————
 // Search dropdown
 // ——————————
@@ -190,7 +139,6 @@ function initSearch() {
 const input = el(“tourSearch”);
 const resultsEl = el(“searchResults”);
 const clearBtn = el(“clearSearchBtn”);
-
 if (clearBtn && input) {
 clearBtn.addEventListener(“click”, () => {
 input.value = “”;
@@ -200,11 +148,9 @@ resultsEl.innerHTML = “”;
 input.focus();
 });
 }
-
 input.addEventListener(“input”, () => {
 const q = input.value.trim().toLowerCase();
 
-```
 if (!q) {
   resultsEl.classList.remove("visible");
   resultsEl.innerHTML = "";
@@ -243,86 +189,63 @@ hits.slice(0, 8).forEach((t) => {
 
 if (hits.length) resultsEl.classList.add("visible");
 else resultsEl.classList.remove("visible");
-```
+
 
 });
-
 document.addEventListener(“click”, (e) => {
 if (!resultsEl.contains(e.target) && e.target !== input) {
 resultsEl.classList.remove(“visible”);
 }
 });
 }
-
 // ——————————
 // Tour selection + detail view
 // ——————————
 /**
-
-- @param {string} tourId
-- @param {{pushUrl?: boolean}} opts
-  */
-  function selectTour(tourId, opts = {}) {
-  const { pushUrl = false } = opts;
-
+∙ @param {string} tourId
+∙ @param {{pushUrl?: boolean}} opts
+*/
+function selectTour(tourId, opts = {}) {
+const { pushUrl = false } = opts;
 const tour = state.tours.find((t) => t.tourId === tourId);
 if (!tour) return;
-
 // store library scroll before hide (only when coming from library)
 if (!state.selectedTour) {
 libraryScrollY = window.scrollY || 0;
 }
-
 state.selectedTour = tour;
-
 if (pushUrl) setUrlTour(getTourSlug(tour));
 setLibraryVisible(false);
-
 setPageDetailMode(true);
-
 el(“tourName”).textContent = tour.tourName;
 el(“tourArtist”).textContent = tour.artist;
 el(“tourMeta”).textContent = tour.notes || “”;
-
 renderTourInfo(tour);
 renderSetlist(tour);
-
 setDetailMode(true);
-
 const backBtn = el(“backToLibrary”);
 backBtn.onclick = () => goBackToLibrary();
-
 scrollToTopInstant();
 }
-
 function goBackToLibrary() {
 state.selectedTour = null;
 setUrlTour(null);
-
 setPageDetailMode(false);
 setDetailMode(false);
-
 setLibraryVisible(true);
 renderLibrary(state.tours);
-
 restoreLibraryScrollInstant();
 }
-
 // ——————————
-// Tour Info (use <a>, not <button>)
-// ✅ FIX: force Tour Website pill to open on single tap in iOS WebView
+// Tour Info
 // ——————————
 function renderTourInfo(t) {
 const grid = el(“tourInfoGrid”);
 const website = normalizeExternalUrl(t.tourWebsite);
-
 const websiteRow = website
-? `<a class="tour-info-row tour-info-row--link" href="${escapeHtml(website)}" data-role="tour-website" rel="noopener"> <div class="tour-info-label">Tour Website</div> <div class="tour-info-value">Open</div> </a>`
+? <a class="tour-info-row tour-info-row--link" href="${escapeHtml(website)}" data-role="tour-website" rel="noopener"> <div class="tour-info-label">Tour Website</div> <div class="tour-info-value">Open</div> </a>
 : “”;
-
-grid.innerHTML = `<div class="tour-info-row"> <div class="tour-info-label">Start Time (Local)</div> <div class="tour-info-value">${escapeHtml(t.startTimeLocal || "—")}</div> </div> ${websiteRow}`;
-
-// iOS WebView fix: “tap” must navigate; otherwise it becomes long-press preview
+grid.innerHTML = <div class="tour-info-row"> <div class="tour-info-label">Start Time (Local)</div> <div class="tour-info-value">${escapeHtml(t.startTimeLocal || "—")}</div> </div> ${websiteRow};
 const link = grid.querySelector(‘a[data-role=“tour-website”]’);
 if (link) {
 link.addEventListener(
@@ -330,37 +253,27 @@ link.addEventListener(
 (e) => {
 e.preventDefault();
 e.stopPropagation();
-
-```
-    // Open inside this same WebView (most reliable for BuildFire)
-    window.location.href = link.getAttribute("href");
-  },
-  true
+window.location.href = link.getAttribute("href");
+},
+true
 );
-```
-
 }
 }
-
 // ——————————
-// Setlist rendering + link generation
+// Setlist rendering
 // ——————————
 function renderSetlist(tour) {
 const listEl = el(“setlistList”);
 listEl.innerHTML = “”;
-
 const setlist = Array.isArray(tour.setlist) ? tour.setlist : [];
-
 if (!setlist.length) {
-listEl.innerHTML = `<div style="padding:14px 16px; color: var(--muted); font-size: var(--fs-14);">No setlist yet.</div>`;
+listEl.innerHTML = <div style="padding:14px 16px; color: var(--muted); font-size: var(--fs-14);">No setlist yet.</div>;
 return;
 }
-
 setlist.forEach((song, idx) => {
 const title = typeof song === “string” ? song : song.title;
 const artist = song.artist || tour.artist;
 
-```
 const row = document.createElement("div");
 row.className = "song-row";
 
@@ -399,148 +312,5 @@ header.addEventListener("click", async () => {
 row.appendChild(header);
 row.appendChild(dropdown);
 listEl.appendChild(row);
-```
-
 });
 }
-
-async function hydrateSongLinks({ title, artist, dropdown }) {
-const appleBtn = dropdown.querySelector(’[data-role=“apple”]’);
-const spotifyBtn = dropdown.querySelector(’[data-role=“spotify”]’);
-
-// Prevent link taps from toggling/closing the accordion
-dropdown.querySelectorAll(“a.song-link-btn”).forEach((a) => {
-a.addEventListener(“click”, (e) => e.stopPropagation(), true);
-});
-
-const key = cacheKey(artist, title);
-const cached = cache[key];
-
-if (cached?.spotifyUrl || cached?.appleUrl) {
-applyLinks({ cached, appleBtn, spotifyBtn });
-return;
-}
-
-try {
-const songlink = await apiSonglinkBySearch({ artist, title });
-
-```
-const payload = {
-  spotifyUrl: songlink?.spotifyUrl || null,
-  appleUrl: songlink?.appleUrl || null,
-  fetchedAt: Date.now(),
-};
-
-cache[key] = payload;
-saveCache();
-
-applyLinks({ cached: payload, appleBtn, spotifyBtn });
-```
-
-} catch (err) {
-console.error(err);
-}
-}
-
-function applyLinks({ cached, appleBtn, spotifyBtn }) {
-const appleUrl = normalizeAppleUrl(cached.appleUrl);
-const spotifyUrl = cached.spotifyUrl;
-
-if (appleUrl) {
-appleBtn.href = appleUrl;
-appleBtn.removeAttribute(“aria-disabled”);
-} else {
-appleBtn.href = “#”;
-appleBtn.setAttribute(“aria-disabled”, “true”);
-}
-
-if (spotifyUrl) {
-spotifyBtn.href = spotifyUrl;
-spotifyBtn.removeAttribute(“aria-disabled”);
-} else {
-spotifyBtn.href = “#”;
-spotifyBtn.setAttribute(“aria-disabled”, “true”);
-}
-}
-
-// ——————————
-// Netlify function API calls
-// ——————————
-async function apiSonglinkBySearch({ artist, title }) {
-const url = `/.netlify/functions/songlink?artist=${encodeURIComponent( artist )}&title=${encodeURIComponent(title)}`;
-const res = await fetch(url);
-return res.json();
-}
-
-// ——————————
-// Utilities
-// ——————————
-function escapeHtml(str) {
-return String(str ?? “”)
-.replaceAll(”&”, “&”)
-.replaceAll(”<”, “<”)
-.replaceAll(”>”, “>”)
-.replaceAll(’”’, “"”)
-.replaceAll(”’”, “'”);
-}
-
-// ——————————
-// Boot
-// ——————————
-(async function init() {
-try {
-// Initialize theme
-initTheme();
-
-```
-// Setup night mode toggle
-const toggleBtn = el("nightModeToggle");
-if (toggleBtn) {
-  toggleBtn.addEventListener("click", toggleTheme);
-}
-
-state.tours = await loadTours();
-renderLibrary(state.tours);
-initSearch();
-
-// default: library
-setPageDetailMode(false);
-setDetailMode(false);
-setLibraryVisible(true);
-
-// Enter from direct link ?tour=...
-const slug = getUrlTour();
-if (slug) {
-  const match = state.tours.find((t) => getTourSlug(t) === slug);
-  if (match) {
-    selectTour(match.tourId, { pushUrl: false }); // already in URL
-  }
-}
-
-// Back/forward support
-window.addEventListener("popstate", () => {
-  const slugNow = getUrlTour();
-
-  if (!slugNow) {
-    state.selectedTour = null;
-    setPageDetailMode(false);
-    setDetailMode(false);
-    setLibraryVisible(true);
-    renderLibrary(state.tours);
-    restoreLibraryScrollInstant();
-    return;
-  }
-
-  const match = state.tours.find((t) => getTourSlug(t) === slugNow);
-  if (match) {
-    selectTour(match.tourId, { pushUrl: false });
-  }
-});
-```
-
-} catch (e) {
-console.error(e);
-const panel = el(“infoPanel”);
-panel.innerHTML = `<div style="max-width:680px;margin:16px auto;padding:16px;background:#fff;border:1px solid #E2E7F0;border-radius:16px;"> <div style="font-weight:800;color:#121E36;">Couldn't load Setlists & Tour Info</div> <div style="margin-top:6px;color:#5E6B86;">Check that <code>data/tours.json</code> exists and is valid JSON.</div> </div>`;
-}
-})();
