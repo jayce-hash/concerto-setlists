@@ -6,7 +6,8 @@
    - Left-align number + title + plus
    - Allow fuller song names (wrap, no ellipsis)
    - Dropdown aligned under title
-   ============================================================ */:root{
+   ============================================================ */
+:root{
 –bg:#F8F9F9;
 –ink:#121E36;
 –muted:#5E6B86;
