@@ -1,5 +1,5 @@
 // ============================================================
-// Concerto · Setlists & Tour Info (with Night Mode)
+// Concerto · Setlists & Tour Info
 // - Loads tours from /data/tours.json
 // - Renders library + search dropdown
 // - On tour select: renders Tour Info + Setlist accordion
@@ -17,10 +17,13 @@ selectedTour: null,
 
 const CACHE_KEY = “concerto_setlist_cache_v1”;
 const THEME_KEY = “concerto_theme”;
+// cache format: { “<artist>::<title>”: { spotifyUrl, appleUrl, fetchedAt } }
 const cache = loadCache();
 
+// NEW: preserve library scroll position so back feels native
 let libraryScrollY = 0;
 
+// NEW: prevent browser scroll restore (helps iOS WebViews)
 if (“scrollRestoration” in history) {
 history.scrollRestoration = “manual”;
 }
@@ -32,7 +35,6 @@ return JSON.parse(localStorage.getItem(CACHE_KEY) || “{}”);
 return {};
 }
 }
-
 function saveCache() {
 localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
 }
@@ -42,36 +44,28 @@ return `${(artist || "").trim().toLowerCase()}::${(title || "") .trim() .toLower
 }
 
 // ——————————
-// Night Mode
+// Night Mode Functions
 // ——————————
 function initTheme() {
-const saved = localStorage.getItem(THEME_KEY) || “light”;
-setTheme(saved, false);
-updateToggleButton(saved);
-}
-
-function setTheme(theme, save = true) {
-document.documentElement.setAttribute(“data-theme”, theme);
-if (save) {
-localStorage.setItem(THEME_KEY, theme);
-}
+const savedTheme = localStorage.getItem(THEME_KEY) || “light”;
+document.documentElement.setAttribute(“data-theme”, savedTheme);
+updateToggleButton(savedTheme);
 }
 
 function toggleTheme() {
 const current = document.documentElement.getAttribute(“data-theme”);
 const newTheme = current === “night” ? “light” : “night”;
-setTheme(newTheme);
+
+document.documentElement.setAttribute(“data-theme”, newTheme);
+localStorage.setItem(THEME_KEY, newTheme);
 updateToggleButton(newTheme);
 }
 
 function updateToggleButton(theme) {
-const btn = el(“nightModeToggle”);
-if (btn) {
-btn.textContent = theme === “night” ? “☀️” : “🌙”;
-btn.setAttribute(
-“aria-label”,
-`Switch to ${theme === "night" ? "light" : "night"} mode`
-);
+const button = document.getElementById(“nightModeToggle”);
+if (button) {
+button.textContent = theme === “night” ? “☀️” : “🌙”;
+button.setAttribute(“aria-label”, `Switch to ${theme === "night" ? "light" : "night"} mode`);
 }
 }
 
@@ -84,7 +78,7 @@ return String(url).replace(“geo.music.apple.com”, “music.apple.com”);
 }
 
 // ——————————
-// URL normalization
+// URL normalization (NEW - for Tour Website)
 // ——————————
 function normalizeExternalUrl(url) {
 if (!url) return null;
@@ -184,6 +178,7 @@ item.addEventListener(“click”, () => selectTour(t.tourId, { pushUrl: true })
 wrap.appendChild(item);
 });
 
+// Optional library count
 const metaEl = el(“libraryMeta”);
 if (metaEl) metaEl.textContent = list?.length ? `${list.length} tours` : “”;
 }
@@ -262,12 +257,18 @@ resultsEl.classList.remove(“visible”);
 // ——————————
 // Tour selection + detail view
 // ——————————
-function selectTour(tourId, opts = {}) {
-const { pushUrl = false } = opts;
+/**
+
+- @param {string} tourId
+- @param {{pushUrl?: boolean}} opts
+  */
+  function selectTour(tourId, opts = {}) {
+  const { pushUrl = false } = opts;
 
 const tour = state.tours.find((t) => t.tourId === tourId);
 if (!tour) return;
 
+// store library scroll before hide (only when coming from library)
 if (!state.selectedTour) {
 libraryScrollY = window.scrollY || 0;
 }
@@ -308,7 +309,8 @@ restoreLibraryScrollInstant();
 }
 
 // ——————————
-// Tour Info
+// Tour Info (use <a>, not <button>)
+// ✅ FIX: force Tour Website pill to open on single tap in iOS WebView
 // ——————————
 function renderTourInfo(t) {
 const grid = el(“tourInfoGrid”);
@@ -320,6 +322,7 @@ const websiteRow = website
 
 grid.innerHTML = `<div class="tour-info-row"> <div class="tour-info-label">Start Time (Local)</div> <div class="tour-info-value">${escapeHtml(t.startTimeLocal || "—")}</div> </div> ${websiteRow}`;
 
+// iOS WebView fix: “tap” must navigate; otherwise it becomes long-press preview
 const link = grid.querySelector(‘a[data-role=“tour-website”]’);
 if (link) {
 link.addEventListener(
@@ -327,10 +330,15 @@ link.addEventListener(
 (e) => {
 e.preventDefault();
 e.stopPropagation();
-window.location.href = link.getAttribute(“href”);
-},
-true
+
+```
+    // Open inside this same WebView (most reliable for BuildFire)
+    window.location.href = link.getAttribute("href");
+  },
+  true
 );
+```
+
 }
 }
 
@@ -400,6 +408,7 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
 const appleBtn = dropdown.querySelector(’[data-role=“apple”]’);
 const spotifyBtn = dropdown.querySelector(’[data-role=“spotify”]’);
 
+// Prevent link taps from toggling/closing the accordion
 dropdown.querySelectorAll(“a.song-link-btn”).forEach((a) => {
 a.addEventListener(“click”, (e) => e.stopPropagation(), true);
 });
@@ -480,11 +489,11 @@ return String(str ?? “”)
 // ——————————
 (async function init() {
 try {
-// Initialize theme first
+// Initialize theme
 initTheme();
 
 ```
-// Set up night mode toggle
+// Setup night mode toggle
 const toggleBtn = el("nightModeToggle");
 if (toggleBtn) {
   toggleBtn.addEventListener("click", toggleTheme);
@@ -494,18 +503,21 @@ state.tours = await loadTours();
 renderLibrary(state.tours);
 initSearch();
 
+// default: library
 setPageDetailMode(false);
 setDetailMode(false);
 setLibraryVisible(true);
 
+// Enter from direct link ?tour=...
 const slug = getUrlTour();
 if (slug) {
   const match = state.tours.find((t) => getTourSlug(t) === slug);
   if (match) {
-    selectTour(match.tourId, { pushUrl: false });
+    selectTour(match.tourId, { pushUrl: false }); // already in URL
   }
 }
 
+// Back/forward support
 window.addEventListener("popstate", () => {
   const slugNow = getUrlTour();
 
@@ -529,6 +541,6 @@ window.addEventListener("popstate", () => {
 } catch (e) {
 console.error(e);
 const panel = el(“infoPanel”);
-panel.innerHTML = `<div style="max-width:680px;margin:16px auto;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;"> <div style="font-weight:800;color:var(--ink);">Couldn't load Setlists & Tour Info</div> <div style="margin-top:6px;color:var(--muted);">Check that <code>data/tours.json</code> exists and is valid JSON.</div> </div>`;
+panel.innerHTML = `<div style="max-width:680px;margin:16px auto;padding:16px;background:#fff;border:1px solid #E2E7F0;border-radius:16px;"> <div style="font-weight:800;color:#121E36;">Couldn't load Setlists & Tour Info</div> <div style="margin-top:6px;color:#5E6B86;">Check that <code>data/tours.json</code> exists and is valid JSON.</div> </div>`;
 }
 })();
