@@ -176,7 +176,29 @@
     "tourWebsite": "https://shop.conangray.com/pages/tour",
     "setlistStatus": "not_released",
     "notes": "Setlist will appear here once released.",
-    "setlist": []
+    "setlist":[
+  { "title": "My World" },
+  { "title": "Never Ending Song" },
+  { "title": "Care" },
+  { "title": "Wish You Were Sober" },
+  { "title": "Class Clown" },
+  { "title": "People Watching" },
+  { "title": "The Cut That Always Bleeds" },
+  { "title": "Eleven Eleven" },
+  { "title": "Nauseous" },
+  { "title": "The Story" },
+  { "title": "Romeo" },
+  { "title": "The Best (Unreleased)" },
+  { "title": "Surprise Song" },
+  { "title": "Heather (Lost Verse)" },
+  { "title": "Family Line" },
+  { "title": "Connell" },
+  { "title": "Actor" },
+  { "title": "Maniac" },
+  { "title": "Vodka Cranberry" },
+  { "title": "Memories" },
+  { "title": "Caramel" }
+]
   },
   {
     "tourId": "journey-final-frontier-tour",
