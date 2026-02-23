@@ -41,8 +41,8 @@
     ]
   },
   {
-  "tourId": "raye-my-21st-century-blues-tour",
-  "tourName": "My 21st Century Blues Tour",
+  "tourId": "raye-this-tour-may-contain-new-music-tour",
+  "tourName": "This Tour May Contain New Music",
   "artist": "RAYE",
   "year": 2026,
   "showsCount": 0,
@@ -51,7 +51,7 @@
   "setlistStatus": "released",
   "notes": "Setlist based on most recent live show.",
   "setlist": [
-    { "title": "Intro: Girl Under The Grey Cloud" },
+    { "title": "Girl Under The Grey Cloud" },
     { "title": "I Will Overcome" },
     { "title": "Where Is My Husband!" },
     { "title": "The Thrill Is Gone" },
