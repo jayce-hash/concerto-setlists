@@ -64,7 +64,7 @@ a{ color:inherit; text-decoration:none; }
 }
 
 .brand-logo{
-  max-width:320px;
+  max-width:200px;
   width:86%;
   height:auto;
   display:block;
@@ -565,7 +565,7 @@ a{ color:inherit; text-decoration:none; }
 
 @media (max-width: 520px){
   .grid{ grid-template-columns: 1fr; }
-  .brand-logo{ width:92%; max-width:340px; }
+  .brand-logo{ width:92%; max-width:220px; }
   .feature-title{ font-size:26px; }
 }
 
