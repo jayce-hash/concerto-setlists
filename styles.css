@@ -60,7 +60,7 @@ a{ color:inherit; text-decoration:none; }
   flex-direction:column;
   align-items:center;
   text-align:center;
-  gap:2px;
+  gap:0;
 }
 
 .brand-logo{
@@ -71,7 +71,7 @@ a{ color:inherit; text-decoration:none; }
 }
 
 .feature-title{
-  margin:2px 0 0;
+  margin:0;
   font-size:28px;
   font-weight:800;
   letter-spacing:-0.02em;
