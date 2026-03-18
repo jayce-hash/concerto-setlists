@@ -1,8 +1,8 @@
 // ============================================================
-// Concerto · Setlists & Tour Info
+// Concerto · Setlists
 // - Loads tours from /data/tours.json
 // - Renders library + search dropdown
-// - On tour select: renders Tour Info + Setlist accordion
+// - On tour select: renders Setlist accordion only
 // - Each tour is its own mini-page via ?tour=TOUR_ID + back/forward support
 // - Auto-generates Spotify + Apple Music links via Netlify functions
 // ============================================================
@@ -15,13 +15,10 @@ const state = {
 };
 
 const CACHE_KEY = "concerto_setlist_cache_v1";
-// cache format: { "<artist>::<title>": { spotifyUrl, appleUrl, fetchedAt } }
 const cache = loadCache();
 
-// NEW: preserve library scroll position so back feels native
 let libraryScrollY = 0;
 
-// NEW: prevent browser scroll restore (helps iOS WebViews)
 if ("scrollRestoration" in history) {
   history.scrollRestoration = "manual";
 }
@@ -43,23 +40,9 @@ function cacheKey(artist, title) {
     .toLowerCase()}`;
 }
 
-// ------------------------------
-// Apple Music URL cleanup
-// ------------------------------
 function normalizeAppleUrl(url) {
   if (!url) return null;
   return String(url).replace("geo.music.apple.com", "music.apple.com");
-}
-
-// ------------------------------
-// URL normalization (NEW - for Tour Website)
-// ------------------------------
-function normalizeExternalUrl(url) {
-  if (!url) return null;
-  const u = String(url).trim();
-  if (!u) return null;
-  if (!/^https?:\/\//i.test(u)) return `https://${u}`;
-  return u;
 }
 
 // ------------------------------
@@ -155,7 +138,6 @@ function renderLibrary(list) {
     wrap.appendChild(item);
   });
 
-  // Optional library count
   const metaEl = el("libraryMeta");
   if (metaEl) metaEl.textContent = list?.length ? `${list.length} tours` : "";
 }
@@ -231,17 +213,12 @@ function initSearch() {
 // ------------------------------
 // Tour selection + detail view
 // ------------------------------
-/**
- * @param {string} tourId
- * @param {{pushUrl?: boolean}} opts
- */
 function selectTour(tourId, opts = {}) {
   const { pushUrl = false } = opts;
 
   const tour = state.tours.find((t) => t.tourId === tourId);
   if (!tour) return;
 
-  // store library scroll before hide (only when coming from library)
   if (!state.selectedTour) {
     libraryScrollY = window.scrollY || 0;
   }
@@ -257,7 +234,6 @@ function selectTour(tourId, opts = {}) {
   el("tourArtist").textContent = tour.artist;
   el("tourMeta").textContent = tour.notes || "";
 
-  renderTourInfo(tour);
   renderSetlist(tour);
 
   setDetailMode(true);
@@ -279,51 +255,6 @@ function goBackToLibrary() {
   renderLibrary(state.tours);
 
   restoreLibraryScrollInstant();
-}
-
-// ------------------------------
-// Tour Info (use <a>, not <button>)
-// ✅ FIX: force Tour Website pill to open on single tap in iOS WebView
-// ------------------------------
-function renderTourInfo(t) {
-  const grid = el("tourInfoGrid");
-  const website = normalizeExternalUrl(t.tourWebsite);
-
-  const websiteRow = website
-    ? `
-      <a class="tour-info-row tour-info-row--link"
-         href="${escapeHtml(website)}"
-         data-role="tour-website"
-         rel="noopener">
-        <div class="tour-info-label">Tour Website</div>
-        <div class="tour-info-value">Open</div>
-      </a>
-    `
-    : "";
-
-  grid.innerHTML = `
-    <div class="tour-info-row">
-      <div class="tour-info-label">Start Time (Local)</div>
-      <div class="tour-info-value">${escapeHtml(t.startTimeLocal || "—")}</div>
-    </div>
-    ${websiteRow}
-  `;
-
-  // iOS WebView fix: "tap" must navigate; otherwise it becomes long-press preview
-  const link = grid.querySelector('a[data-role="tour-website"]');
-  if (link) {
-    link.addEventListener(
-      "click",
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Open inside this same WebView (most reliable for BuildFire)
-        window.location.href = link.getAttribute("href");
-      },
-      true
-    );
-  }
 }
 
 // ------------------------------
@@ -389,7 +320,6 @@ async function hydrateSongLinks({ title, artist, dropdown }) {
   const appleBtn = dropdown.querySelector('[data-role="apple"]');
   const spotifyBtn = dropdown.querySelector('[data-role="spotify"]');
 
-  // Prevent link taps from toggling/closing the accordion
   dropdown.querySelectorAll("a.song-link-btn").forEach((a) => {
     a.addEventListener("click", (e) => e.stopPropagation(), true);
   });
@@ -473,21 +403,18 @@ function escapeHtml(str) {
     renderLibrary(state.tours);
     initSearch();
 
-    // default: library
     setPageDetailMode(false);
     setDetailMode(false);
     setLibraryVisible(true);
 
-    // Enter from direct link ?tour=...
     const slug = getUrlTour();
     if (slug) {
       const match = state.tours.find((t) => getTourSlug(t) === slug);
       if (match) {
-        selectTour(match.tourId, { pushUrl: false }); // already in URL
+        selectTour(match.tourId, { pushUrl: false });
       }
     }
 
-    // Back/forward support
     window.addEventListener("popstate", () => {
       const slugNow = getUrlTour();
 
@@ -510,7 +437,7 @@ function escapeHtml(str) {
     console.error(e);
     const panel = el("infoPanel");
     panel.innerHTML = `<div style="max-width:680px;margin:16px auto;padding:16px;background:#fff;border:1px solid #E2E7F0;border-radius:16px;">
-      <div style="font-weight:800;color:#121E36;">Couldn’t load Setlists & Tour Info</div>
+      <div style="font-weight:800;color:#121E36;">Couldn't load Setlists</div>
       <div style="margin-top:6px;color:#5E6B86;">Check that <code>data/tours.json</code> exists and is valid JSON.</div>
     </div>`;
   }
