@@ -49,7 +49,7 @@ a{ color:inherit; text-decoration:none; }
   background:var(--bg);
   border-bottom:1px solid var(--line);
   box-shadow:0 2px 8px rgba(18,30,54,.04);
-  padding:10px 0 14px;
+  padding:6px 0 10px;
 }
 
 .page-header-inner{
@@ -60,7 +60,7 @@ a{ color:inherit; text-decoration:none; }
   flex-direction:column;
   align-items:center;
   text-align:center;
-  gap:6px;
+  gap:2px;
 }
 
 .brand-logo{
@@ -71,7 +71,7 @@ a{ color:inherit; text-decoration:none; }
 }
 
 .feature-title{
-  margin:2px 0 0;
+  margin: 0;
   font-size:28px;
   font-weight:800;
   letter-spacing:-0.02em;
