@@ -1,11 +1,5 @@
 /* ============================================================
-   Concerto — Setlists & Tour Info (LIGHT MODE ONLY)
-   UPDATED v3:
-   - Setlist: cleaner separators (no wonky double/inset lines)
-   - Hide artist name in rows
-   - Left-align number + title + plus
-   - Allow fuller song names (wrap, no ellipsis)
-   - Dropdown aligned under title
+   Concerto — Setlists (LIGHT MODE ONLY)
    ============================================================ */
 
 :root{
@@ -48,7 +42,7 @@ body{
 a{ color:inherit; text-decoration:none; }
 
 /* ============================================================
-   Header (match Festivals)
+   Header
    ============================================================ */
 
 .page-header{
@@ -354,56 +348,13 @@ a{ color:inherit; text-decoration:none; }
 }
 
 /* ============================================================
-   Tour Info rows
+   Setlist accordion
    ============================================================ */
 
-.tour-info-grid{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.tour-info-row{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-  padding:12px;
-  background:#fff;
-  border:1px solid rgba(18,30,54,.08);
-  border-radius:14px;
-  box-shadow:var(--shadow2);
-}
-
-.tour-info-label{
-  font-size:var(--fs-12);
-  color:var(--muted);
-  font-weight:700;
-  letter-spacing:.02em;
-}
-
-.tour-info-value{
-  font-size:var(--fs-14);
-  color:var(--ink);
-  font-weight:650;
-  text-align:right;
-}
-
-/* ============================================================
-   Setlist accordion — CLEAN LIST v3
-   Notes:
-   - We “full-bleed” the list inside the Setlist card by canceling
-     .section-body horizontal padding (prevents inset/double lines).
-   - Hides .song-meta
-   - Titles wrap (no ellipsis)
-   ============================================================ */
-
-/* Make the list span full width of the card so dividers look clean */
 #setlistList{
-  margin: 0 -16px; /* cancels .section-body { padding:14px 16px } */
+  margin: 0 -16px;
 }
 
-/* No extra container/border — rely on row dividers only */
 .setlist-list{
   background: transparent;
   border: 0;
@@ -412,7 +363,6 @@ a{ color:inherit; text-decoration:none; }
   overflow: visible;
 }
 
-/* One consistent divider system */
 .song-row{
   border-bottom: 1px solid rgba(18,30,54,.08);
 }
@@ -423,10 +373,9 @@ a{ color:inherit; text-decoration:none; }
   border-bottom: none;
 }
 
-/* Header: index | title | plus (artist hidden) */
 .song-row-header{
   width:100%;
-  padding: 14px 16px;         /* put spacing on the row itself */
+  padding: 14px 16px;
   border:0;
   background: transparent;
 
@@ -447,7 +396,6 @@ a{ color:inherit; text-decoration:none; }
   background: rgba(18,30,54,.03);
 }
 
-/* Number: subtle, left */
 .song-index{
   text-align:left;
   font-size:var(--fs-12);
@@ -457,7 +405,6 @@ a{ color:inherit; text-decoration:none; }
   padding-top:2px;
 }
 
-/* Title: wrap (show more of full names) */
 .song-title{
   min-width:0;
 
@@ -472,18 +419,15 @@ a{ color:inherit; text-decoration:none; }
   overflow: visible;
   text-overflow: clip;
 
-  /* show up to 2 lines for consistency (remove if you want unlimited) */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
-/* Hide artist/meta */
 .song-meta{
   display:none !important;
 }
 
-/* Plus */
 .song-chevron{
   text-align:right;
   font-family: var(--font);
@@ -494,10 +438,9 @@ a{ color:inherit; text-decoration:none; }
   padding-top:2px;
 }
 
-/* Dropdown aligned under title */
 .song-dropdown{
   display:none;
-  padding: 0 16px 14px 50px;  /* 22 index + 12 gap + title start */
+  padding: 0 16px 14px 50px;
   background: transparent;
   border: 0;
 }
@@ -510,7 +453,6 @@ a{ color:inherit; text-decoration:none; }
   gap:10px;
 }
 
-/* Buttons — BOTH Apple + Spotify LIGHT */
 .song-link-btn{
   display:inline-flex;
   align-items:center;
@@ -536,19 +478,12 @@ a{ color:inherit; text-decoration:none; }
   box-shadow:var(--shadow);
 }
 
-/* Remove dark primary styling entirely (Spotify matches Apple) */
-.song-link-btn.primary{
-  background:#fff;
-  color:var(--ink);
-  border-color:var(--line);
-}
-
-/* Disabled state */
 .song-link-btn[aria-disabled="true"]{
   opacity:.55;
   cursor:not-allowed;
   transform:none;
   box-shadow:var(--shadow2);
+  pointer-events:none;
 }
 
 /* ============================================================
@@ -634,33 +569,6 @@ a{ color:inherit; text-decoration:none; }
   .feature-title{ font-size:26px; }
 }
 
-/* Make Tour Website (now an <a>) look + behave exactly like the Start Time pill */
-.tour-info-row.tour-info-row--link{
-  display:flex;
-  width:100%;
-  cursor:pointer;
-  text-decoration:none;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-/* Optional: subtle hover like your other pills */
-.tour-info-row.tour-info-row--link:hover{
-  background:#F5F7FB;
-}
-
-/* IMPORTANT: if any parent sets pointer-events weirdly, force these tappable */
-.tour-info-row.tour-info-row--link,
-.song-link-btn{
-  pointer-events:auto;
-}
-
-/* Disabled <a> state */
-.song-link-btn[aria-disabled="true"]{
-  pointer-events:none;
-}
-
-/* Mobile: disable hover highlight (feels cleaner on iOS) */
 @media (hover: none){
   .song-row-header:hover{ background: transparent; }
 }
