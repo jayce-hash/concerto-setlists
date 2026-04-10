@@ -371,7 +371,25 @@
     "tourWebsite": "https://www.alexwarrenofficial.com/#tour",
     "setlistStatus": "not_released",
     "notes": "Setlist will appear here once released.",
-    "setlist": []
+    "setlist": [
+  { "title": "Troubled Water" },
+  { "title": "Bloodline" },
+  { "title": "The Outside" },
+  { "title": "First Time On Earth" },
+  { "title": "Before You Leave Me" },
+  { "title": "You'll Be Alright, Kid" },
+  { "title": "Never Be Far" },
+  { "title": "Eternity" },
+  { "title": "Catch My Breath" },
+  { "title": "Heaven Without You" },
+  { "title": "Getaway Car" },
+  { "title": "You Can't Stop This" },
+  { "title": "Carry You Home" },
+  { "title": "Save You A Seat" },
+  { "title": "Burning Down" },
+  { "title": "Fever Dream" },
+  { "title": "Ordinary" }
+]
   },
   {
     "tourId": "demi-lovato-its-not-that-deep-tour",
@@ -411,7 +429,7 @@
   },
   {
     "tourId": "bts-world-tour",
-    "tourName": "BTS WORLD Tour",
+    "tourName": "BTS ARIRANG Tour",
     "artist": "BTS",
     "year": 2026,
     "showsCount": 0,
@@ -419,7 +437,31 @@
     "tourWebsite": "",
     "setlistStatus": "not_released",
     "notes": "Setlist will appear here once released.",
-    "setlist": []
+    "setlist": [
+  { "title": "Hooligan" },
+  { "title": "Alien" },
+  { "title": "Run BTS" },
+  { "title": "They Don't Know Bout Us" },
+  { "title": "Like Animals" },
+  { "title": "Fake Love" },
+  { "title": "Swim" },
+  { "title": "Merry Go Round" },
+  { "title": "2.0" },
+  { "title": "Normal" },
+  { "title": "Not Today" },
+  { "title": "Mic Drop" },
+  { "title": "FYA" },
+  { "title": "Fire" },
+  { "title": "Body to Body" },
+  { "title": "Idol" },
+  { "title": "Come Over" },
+  { "title": "Butter" },
+  { "title": "Dynamite" },
+  { "title": "Mikrokosmo" },
+  { "title": "I Need You" },
+  { "title": "Please" },
+  { "title": "Into The Sun" }
+]
   },
   {
     "tourId": "pitbull-im-back-tour",
