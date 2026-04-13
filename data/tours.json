@@ -416,18 +416,6 @@
 ]
   },
   {
-    "tourId": "demi-lovato-its-not-that-deep-tour",
-    "tourName": "It's Not That Deep Tour",
-    "artist": "Demi Lovato",
-    "year": 2026,
-    "showsCount": 23,
-    "startTimeLocal": "8:00 PM",
-    "tourWebsite": "https://www.demilovato.com",
-    "setlistStatus": "not_released",
-    "notes": "Setlist will appear here once released.",
-    "setlist": []
-  },
-  {
     "tourId": "bruno-mars-the-romantic-tour",
     "tourName": "The Romantic Tour",
     "artist": "Bruno Mars",
@@ -539,42 +527,6 @@
 ]
   },
   {
-    "tourId": "pitbull-im-back-tour",
-    "tourName": "I'm Back Tour",
-    "artist": "Pitbull",
-    "year": 2026,
-    "showsCount": 0,
-    "startTimeLocal": "8:00 PM",
-    "tourWebsite": "",
-    "setlistStatus": "not_released",
-    "notes": "Setlist will appear here once released.",
-    "setlist": []
-  },
-  {
-    "tourId": "harry-styles-together-together-tour-2026",
-    "tourName": "Together, Together Tour",
-    "artist": "Harry Styles",
-    "year": 2026,
-    "showsCount": 0,
-    "startTimeLocal": "8:00 PM",
-    "tourWebsite": "",
-    "setlistStatus": "not_released",
-    "notes": "Setlist will appear here once released.",
-    "setlist": []
-  },
-  {
-    "tourId": "madison-beer-the-locket-tour",
-    "tourName": "the locket tour",
-    "artist": "Madison Beer",
-    "year": 2026,
-    "showsCount": 0,
-    "startTimeLocal": "8:00 PM",
-    "tourWebsite": "",
-    "setlistStatus": "not_released",
-    "notes": "Setlist will appear here once released.",
-    "setlist": []
-  },
-  {
     "tourId": "ed-sheeran-the-loop-tour-na-2026",
     "tourName": "Loop Tour",
     "artist": "Ed Sheeran",
@@ -619,41 +571,5 @@
     { "title": "Azizam" },
     { "title": "Bad Habits" }
 ]
-  },
-  {
-    "tourId": "bon-jovi-forever-tour",
-    "tourName": "Forever Tour",
-    "artist": "Bon Jovi",
-    "year": 2026,
-    "showsCount": 0,
-    "startTimeLocal": "8:00 PM",
-    "tourWebsite": "",
-    "setlistStatus": "not_released",
-    "notes": "Setlist will appear here once released.",
-    "setlist": []
-  },
-  {
-    "tourId": "olivia-dean-the-art-of-loving-tour",
-    "tourName": "The Art of Loving Tour",
-    "artist": "Olivia Dean",
-    "year": 2026,
-    "showsCount": 22,
-    "startTimeLocal": "8:00 PM",
-    "tourWebsite": "https://www.oliviadeano.com/#tour",
-    "setlistStatus": "not_released",
-    "notes": "Setlist will appear here once released.",
-    "setlist": []
-  },
-  {
-    "tourId": "my-chemical-romance-the-black-parade-tour",
-    "tourName": "The Black Parade 2026",
-    "artist": "My Chemical Romance",
-    "year": 2026,
-    "showsCount": 0,
-    "startTimeLocal": "8:00 PM",
-    "tourWebsite": "",
-    "setlistStatus": "not_released",
-    "notes": "Setlist will appear here once released.",
-    "setlist": []
   }
 ]
