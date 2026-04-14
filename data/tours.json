@@ -7,7 +7,7 @@
     "showsCount": 0,
     "startTimeLocal": "8:00 PM",
     "tourWebsite": "",
-    "setlistStatus": "not_released",
+    "setlistStatus": "released",
     "notes": "Setlist will appear here once released.",
     "setlist": [
   { "title": "Bad as I Used to Be" },
@@ -89,7 +89,7 @@
     "showsCount": 0,
     "startTimeLocal": "8:00 PM",
     "tourWebsite": "",
-    "setlistStatus": "not_released",
+    "setlistStatus": "released",
     "notes": "Setlist will appear here once released.",
     "setlist": [
   { "title": "Everybody Scream" },
@@ -123,7 +123,7 @@
     "showsCount": 0,
     "startTimeLocal": "8:00 PM",
     "tourWebsite": "",
-    "setlistStatus": "not_released",
+    "setlistStatus": "released",
     "notes": "Setlist will appear here once released.",
     "setlist": [
   { "title": "Hello" },
@@ -173,7 +173,7 @@
     "showsCount": 25,
     "startTimeLocal": "8:00 PM",
     "tourWebsite": "https://www.ladygaga.com/us-en/live",
-    "setlistStatus": "available",
+    "setlistStatus": "released",
     "notes": "Setlist may vary by date.",
     "setlist": [
       { "title": "Bloody Mary" },
@@ -215,7 +215,7 @@
     "showsCount": 16,
     "startTimeLocal": "8:00 PM",
     "tourWebsite": "https://shop.conangray.com/pages/tour",
-    "setlistStatus": "not_released",
+    "setlistStatus": "released",
     "notes": "Setlist will appear here once released.",
     "setlist":[
   { "title": "My World" },
@@ -286,7 +286,7 @@
     "showsCount": 0,
     "startTimeLocal": "8:00 PM",
     "tourWebsite": "",
-    "setlistStatus": "not_released",
+    "setlistStatus": "released",
     "notes": "Setlist will appear here once released.",
     "setlist": [
   { "title": "Faith In The Heartland" },
@@ -322,7 +322,7 @@
     "showsCount": 0,
     "startTimeLocal": "8:00 PM",
     "tourWebsite": "",
-    "setlistStatus": "not_released",
+    "setlistStatus": "released",
     "notes": "Setlist will appear here once released.",
     "setlist": [
   { "title": "Lemonade" },
@@ -359,7 +359,7 @@
     "showsCount": 0,
     "startTimeLocal": "8:00 PM",
     "tourWebsite": "",
-    "setlistStatus": "not_released",
+    "setlistStatus": "released",
     "notes": "Setlist will appear here once released.",
     "setlist": [
   { "title": "Mirtazapine" },
@@ -393,7 +393,7 @@
     "showsCount": 41,
     "startTimeLocal": "8:00 PM",
     "tourWebsite": "https://www.alexwarrenofficial.com/#tour",
-    "setlistStatus": "not_released",
+    "setlistStatus": "released",
     "notes": "Setlist will appear here once released.",
     "setlist": [
   { "title": "Troubled Water" },
@@ -423,9 +423,9 @@
     "showsCount": 0,
     "startTimeLocal": "8:00 PM",
     "tourWebsite": "",
-    "setlistStatus": "not_released",
+    "setlistStatus": "released",
     "notes": "Setlist will appear here once released.",
-        "setlist": [
+    "setlist": [
   { "title": "Risk It All" },
   { "title": "Cha Cha Cha" },
   { "title": "On My Soul" },
@@ -462,7 +462,7 @@
     "showsCount": 0,
     "startTimeLocal": "8:00 PM",
     "tourWebsite": "",
-    "setlistStatus": "not_released",
+    "setlistStatus": "released",
     "notes": "Setlist will appear here once released.",
     "setlist": [
   { "title": "Changes" },
@@ -488,6 +488,44 @@
   { "title": "I Need You" },
   { "title": "Please" },
   { "title": "Into The Sun" }
+]
+  },
+    {
+    "tourId": "demi-lovato-its-not-that-deep--tour",
+    "tourName": "It's Not That Deep Tour",
+    "artist": "Demi Lovato",
+    "year": 2026,
+    "showsCount": 0,
+    "startTimeLocal": "8:00 PM",
+    "tourWebsite": "https://shop.demilovato.com/pages/tour?srsltid=AfmBOopB_IiKQEg2XBdamgQT7Dd3DwUO8JRPHP767bENYIvVaw699Fz_",
+    "setlistStatus": "released",
+    "notes": "Setlist will appear here once released.",
+    "setlist": [
+{ "title": "Fast" },
+{ "title": "Kiss" },
+{ "title": "Frequency" },
+{ "title": "Heart Attack" },
+{ "title": "Tell Me You Love Me" },
+{ "title": "Confident" },
+{ "title": "Low Rise Jeans" },
+{ "title": "Fantasy" },
+{ "title": "Solo" },
+{ "title": "Instruction / No Promises / Neon Lights" },
+{ "title": "Skyscraper" },
+{ "title": "Give Your Heart a Break" },
+{ "title": "Say It" },
+{ "title": "Little Bit" },
+{ "title": "Ghost" },
+{ "title": "Here All Night" },
+{ "title": "Joshua Tree" },
+{ "title": "This Is Me (with Joe Jonas)" },
+{ "title": "On The Line (with Joe Jonas)" },
+{ "title": "Let You Go" },
+{ "title": "Stone Cold" },
+{ "title": "Sorry Not Sorry" },
+{ "title": "Really Don’t Care" },
+{ "title": "Sorry To Myself" },
+{ "title": "Cool for the Summer" }
 ]
   },
   {
