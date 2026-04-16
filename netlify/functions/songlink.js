@@ -64,14 +64,29 @@ function normalize(str) {
 
 function getJson(url) {
   return new Promise((resolve, reject) => {
+    // We need to parse the URL to pass options to https.get
+    const uri = new URL(url);
+    const options = {
+      hostname: uri.hostname,
+      path: uri.pathname + uri.search,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'ConcertoSetlists/1.0', // Helps prevent being blocked
+        'Accept': 'application/json'
+      }
+    };
+
     https
-      .get(url, (res) => {
+      .get(options, (res) => {
         let data = "";
         res.on("data", (chunk) => (data += chunk));
         res.on("end", () => {
           try {
+            if (res.statusCode === 429) {
+               console.error("Songlink Rate Limit Hit");
+               return resolve({});
+            }
             const parsed = JSON.parse(data || "{}");
-            // Treat non-2xx as “no result”, not fatal
             if (res.statusCode < 200 || res.statusCode >= 300) {
               return resolve({ __httpError: res.statusCode, __body: parsed });
             }
