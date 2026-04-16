@@ -7,7 +7,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="./styles.css" />
 </head>
@@ -15,9 +15,15 @@
 <body>
   <header class="page-header">
     <div class="page-header-inner">
-      <img src="./images/brand/concerto-logo.png" alt="Concerto" class="brand-logo" />
+      <img
+        src="./images/brand/concerto-logo.png"
+        alt="Concerto - From the Concert to the City"
+        class="brand-logo"
+      />
+
       <h1 class="feature-title">Setlists</h1>
       <p class="tagline">Pick a tour. Get the setlist—instantly.</p>
+
       <div class="header-actions">
         <a class="btn-ghost" href="#" id="openHelp">How it works</a>
       </div>
@@ -28,21 +34,33 @@
     <section class="hero">
       <div class="search-row">
         <div class="search">
-          <input id="tourSearch" type="search" placeholder="Search tours or artists" autocomplete="off" />
-          <button id="clearSearchBtn" class="icon-btn" title="Clear">×</button>
+          <input
+            id="tourSearch"
+            type="search"
+            placeholder="Search tours or artists"
+            autocomplete="off"
+          />
+          <button id="clearSearchBtn" class="icon-btn" title="Clear" aria-label="Clear">×</button>
         </div>
       </div>
+
       <div id="searchResults" class="search-results"></div>
     </section>
 
     <section id="infoPanel" class="info-panel info-panel--empty">
       <div class="info-empty">
         <h2>Browse Tours</h2>
-        <p>Search above or pick one below. Tap songs to reveal Apple Music links.</p>
+        <p>
+          Search above or pick one below. If a setlist is available, tap songs to generate
+          Apple Music links automatically.
+        </p>
       </div>
 
       <div class="info-content" hidden>
-        <button id="backToLibrary" class="back-btn" type="button">← Tour Library</button>
+        <button id="backToLibrary" class="back-btn" type="button" aria-label="Back to Tour Library">
+          ← Tour Library
+        </button>
+
         <header class="info-header">
           <div>
             <h2 id="tourName"></h2>
@@ -59,7 +77,9 @@
                 <div class="section-sub">Tap a song to reveal links.</div>
               </div>
             </div>
-            <div id="setlistList" class="setlist-list"></div>
+            <div class="section-body">
+              <div id="setlistList" class="setlist-list"></div>
+            </div>
           </article>
         </div>
       </div>
@@ -67,7 +87,9 @@
       <section class="browse-list">
         <div class="grid-head">
           <div class="muted" id="libraryMeta"></div>
+          <div class="right"></div>
         </div>
+
         <div id="toursBrowseList" class="grid"></div>
       </section>
     </section>
@@ -80,8 +102,9 @@
       <div class="modal-body">
         <ul class="bullets">
           <li>Browse or search tours.</li>
-          <li>Tap a tour to open details.</li>
-          <li>Tap songs to generate Apple Music links.</li>
+          <li>Tap a tour to open the details page.</li>
+          <li>If a setlist is available, tap songs to get links.</li>
+          <li>Apple Music links generate automatically.</li>
         </ul>
       </div>
       <div class="modal-actions">
@@ -91,14 +114,20 @@
   </div>
 
   <script src="./app.js" defer></script>
+
   <script>
     window.addEventListener("DOMContentLoaded", () => {
-      const modal = document.getElementById("modal");
       const openHelp = document.getElementById("openHelp");
-      const closeEls = [document.getElementById("modalClose"), document.getElementById("modalOk")];
-      
-      openHelp?.addEventListener("click", (e) => { e.preventDefault(); modal.hidden = false; });
-      closeEls.forEach(el => el?.addEventListener("click", () => modal.hidden = true));
+      const modal = document.getElementById("modal");
+      const close = document.getElementById("modalClose");
+      const ok = document.getElementById("modalOk");
+
+      function openM(e){ e?.preventDefault?.(); modal.hidden = false; }
+      function closeM(){ modal.hidden = true; }
+
+      openHelp?.addEventListener("click", openM);
+      close?.addEventListener("click", closeM);
+      ok?.addEventListener("click", closeM);
     });
   </script>
 </body>
