@@ -2,98 +2,102 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Concerto · Setlists</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+  <meta name="theme-color" content="#F8F9F9"/>
+  <title>Setlists — Concerto</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  
   <link rel="stylesheet" href="./styles.css" />
 </head>
 
 <body>
-  <header class="page-header">
-    <div class="page-header-inner">
-      <img
-        src="./images/brand/concerto-logo.png"
-        alt="Concerto - From the Concert to the City"
-        class="brand-logo"
-      />
-
-      <h1 class="feature-title">Setlists</h1>
-      <p class="tagline">Pick a tour. Get the setlist—instantly.</p>
-
-      <div class="header-actions">
-        <a class="btn-ghost" href="#" id="openHelp">How it works</a>
+  <div id="app">
+    <div class="topbar">
+      <div class="topbar-logo">
+        <span class="topbar-logo-word">CONCERTO - SETLISTS</span>
+        <span class="topbar-logo-sub">A Premium Experience</span>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" id="openHelp" title="How it works" aria-label="Help">?</button>
       </div>
     </div>
-  </header>
 
-  <main class="container">
-    <section class="hero">
-      <div class="search-row">
-        <div class="search">
+    <main class="scroll-area active" id="s-home">
+      
+      <section class="hero">
+        <div class="eyebrow">Instant Access.</div>
+        <h1 class="headline">Pick a tour.<br><em>Get the setlist.</em></h1>
+        <p class="sub">Search tours or artists to generate Apple Music links automatically.</p>
+
+        <div class="dropdown-wrap search-row">
           <input
             id="tourSearch"
+            class="light-input"
             type="search"
-            placeholder="Search tours or artists"
+            placeholder="Search tours or artists..."
             autocomplete="off"
           />
-          <button id="clearSearchBtn" class="icon-btn" title="Clear" aria-label="Clear">×</button>
+          <button id="clearSearchBtn" class="clear-btn" title="Clear" aria-label="Clear">×</button>
+          
+          <div id="searchResults" class="dropdown-list search-results"></div>
         </div>
-      </div>
-
-      <div id="searchResults" class="search-results"></div>
-    </section>
-
-    <section id="infoPanel" class="info-panel info-panel--empty">
-      <div class="info-empty">
-        <h2>Browse Tours</h2>
-        <p>
-          Search above or pick one below. If a setlist is available, tap songs to generate
-          Apple Music links automatically.
-        </p>
-      </div>
-
-      <div class="info-content" hidden>
-        <button id="backToLibrary" class="back-btn" type="button" aria-label="Back to Tour Library">
-          ← Tour Library
-        </button>
-
-        <header class="info-header">
-          <div>
-            <h2 id="tourName"></h2>
-            <p id="tourArtist" class="tour-artist-line"></p>
-            <p id="tourMeta" class="tour-meta-line"></p>
-          </div>
-        </header>
-
-        <div class="info-cards">
-          <article class="info-card">
-            <div class="section-head">
-              <div>
-                <div class="section-title">Setlist</div>
-                <div class="section-sub">Tap a song to reveal links.</div>
-              </div>
-            </div>
-            <div class="section-body">
-              <div id="setlistList" class="setlist-list"></div>
-            </div>
-          </article>
-        </div>
-      </div>
-
-      <section class="browse-list">
-        <div class="grid-head">
-          <div class="muted" id="libraryMeta"></div>
-          <div class="right"></div>
-        </div>
-
-        <div id="toursBrowseList" class="grid"></div>
       </section>
-    </section>
-  </main>
+
+      <section id="infoPanel" class="info-panel info-panel--empty">
+        
+        <div class="info-empty explainer-card">
+          <div class="explainer-icon">🎵</div>
+          <div class="explainer-text">
+            <div class="et-title">Browse Tours</div>
+            <div class="et-sub">Search above or pick one below. If a setlist is available, tap songs to generate links.</div>
+          </div>
+        </div>
+
+        <div class="info-content" hidden>
+          <button id="backToLibrary" class="action-btn ghost" type="button" aria-label="Back to Tour Library" style="margin-bottom: 20px; padding: 14px;">
+            ← Back to Tour Library
+          </button>
+
+          <header class="bag-id-card info-header" style="margin-bottom: 14px;">
+            <div class="bag-id-thumb" style="font-size: 24px;">🎤</div>
+            <div class="bag-id-info">
+              <h2 id="tourName" class="bi-type" style="font-style: normal; font-weight: 700;"></h2>
+              <p id="tourArtist" class="bi-dims tour-artist-line"></p>
+            </div>
+            <div class="bag-confidence">
+              <div id="tourMeta" class="bc-label tour-meta-line" style="text-align: right; margin-top: 4px;"></div>
+            </div>
+          </header>
+
+          <div class="info-cards">
+            <article class="policy-card info-card">
+              <div class="policy-card-header section-head" style="margin-bottom: 0;">
+                <div class="policy-card-icon">📋</div>
+                <div class="policy-card-title section-title">Official Setlist</div>
+              </div>
+              <div class="section-sub" style="font-size: 11px; color: var(--ink-3); margin-bottom: 14px;">Tap a song to reveal links.</div>
+              
+              <div class="section-body">
+                <div id="setlistList" class="setlist-list"></div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <section class="browse-list">
+          <div class="grid-head">
+            <div class="field-label muted" id="libraryMeta" style="margin-top: 28px; margin-bottom: 10px;"></div>
+            <div class="right"></div>
+          </div>
+          <div id="toursBrowseList" class="grid explainer-row" style="margin-top: 0;"></div>
+        </section>
+
+      </section>
+    </main>
+  </div>
 
   <div class="modal" id="modal" hidden>
     <div class="modal-backdrop" id="modalClose"></div>
