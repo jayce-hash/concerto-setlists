@@ -3,7 +3,7 @@
 // - Loads tours from /data/tours.json
 // - Renders library + search dropdown
 // - On tour select: renders Setlist accordion only
-// - Each tour is its own mini-page via ?tour=TOUR_ID + back/forward support
+// - Each tour is its own mini-page via hash routing
 // - Auto-generates Apple Music links via Netlify functions
 // ============================================================
 
@@ -52,16 +52,39 @@ function getTourSlug(t) {
   return t?.tourId || "";
 }
 
-function getUrlTour() {
-  const url = new URL(window.location.href);
-  return url.searchParams.get("tour");
+// Returns the matched tour based on Hash, Path, or Query Param
+function getTourFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const incomingQuery = params.get("tour");
+
+  const hashPath = window.location.hash.replace(/^#\/?/, '').toLowerCase(); 
+  const urlPath = window.location.pathname.replace(/^\/|\/$/g, '').toLowerCase(); 
+
+  // 1. Fallback for old ?tour= links
+  if (incomingQuery) {
+    return state.tours.find((t) => t.tourId.toLowerCase() === incomingQuery.toLowerCase());
+  }
+  
+  // 2. Magic Link check using clean paths
+  const searchString = (hashPath || urlPath).replace(/[^a-z0-9]/g, '');
+  if (searchString && searchString !== 'indexhtml') {
+    return state.tours.find((t) => {
+      const cleanId = t.tourId.replace(/[^a-z0-9]/g, '');
+      const cleanName = t.tourName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return cleanId === searchString || cleanName === searchString;
+    });
+  }
+  return null;
 }
 
+// Update the URL to the clean hash format
 function setUrlTour(slugOrNull) {
-  const url = new URL(window.location.href);
-  if (slugOrNull) url.searchParams.set("tour", slugOrNull);
-  else url.searchParams.delete("tour");
-  window.history.pushState({ tourSlug: slugOrNull || null }, "", url.toString());
+  if (slugOrNull) {
+    const cleanHash = slugOrNull.replace(/[^a-z0-9]/g, '');
+    window.history.pushState({ tourSlug: slugOrNull }, "", "#" + cleanHash);
+  } else {
+    window.history.pushState({ tourSlug: null }, "", window.location.pathname);
+  }
 }
 
 function setLibraryVisible(isVisible) {
@@ -115,7 +138,8 @@ function restoreLibraryScrollInstant() {
 // Data
 // ------------------------------
 async function loadTours() {
-  const res = await fetch("./data/tours.json", { cache: "no-store" });
+  // MUST have leading slash to fix deep linking
+  const res = await fetch("/data/tours.json", { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to load tours.json");
   return res.json();
 }
@@ -393,18 +417,15 @@ function escapeHtml(str) {
     setDetailMode(false);
     setLibraryVisible(true);
 
-    const slug = getUrlTour();
-    if (slug) {
-      const match = state.tours.find((t) => getTourSlug(t) === slug);
-      if (match) {
-        selectTour(match.tourId, { pushUrl: false });
-      }
+    const match = getTourFromUrl();
+    if (match) {
+      selectTour(match.tourId, { pushUrl: false });
     }
 
     window.addEventListener("popstate", () => {
-      const slugNow = getUrlTour();
+      const matchNow = getTourFromUrl();
 
-      if (!slugNow) {
+      if (!matchNow) {
         state.selectedTour = null;
         setPageDetailMode(false);
         setDetailMode(false);
@@ -414,10 +435,7 @@ function escapeHtml(str) {
         return;
       }
 
-      const match = state.tours.find((t) => getTourSlug(t) === slugNow);
-      if (match) {
-        selectTour(match.tourId, { pushUrl: false });
-      }
+      selectTour(matchNow.tourId, { pushUrl: false });
     });
   } catch (e) {
     console.error(e);
