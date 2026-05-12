@@ -1,5 +1,5 @@
 /* ============================================================
-   Concerto — Setlists (Premium Aesthetic)
+   Concerto — Setlists (Premium Aesthetic based on Bag Check)
    ============================================================ */
 
 :root {
@@ -62,7 +62,7 @@ button {
 .icon-btn {
   width:36px; height:36px; border-radius:50%;
   background:var(--card); border:1px solid var(--card-b);
-  display:grid; place-items:center; color:var(--ink-2); font-size:13px;
+  display:grid; place-items:center; color:var(--ink-2); font-size:15px;
   transition:background .18s, transform .18s var(--spring), border-color .18s;
 }
 .icon-btn:hover { background:var(--bg-2); border-color:var(--card-b2); transform:scale(1.06); }
@@ -107,11 +107,11 @@ button {
 
 .clear-btn {
   position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  width: 26px; height: 26px; border-radius: 50%; border: none; background: var(--bg-2);
-  color: var(--ink-2); font-size: 16px; cursor: pointer;
-  display: grid; place-items: center;
+  width: 26px; height: 26px; border-radius: 50%; border: none; background: transparent;
+  color: var(--ink-3); font-size: 18px; cursor: pointer;
+  display: grid; place-items: center; transition: color .18s;
 }
-.clear-btn:hover { background: var(--bg-3); color: var(--ink); }
+.clear-btn:hover { color: var(--ink); }
 
 .search-results {
   position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:999;
@@ -138,14 +138,9 @@ button {
   border-radius:var(--r-md); padding:14px 16px;
   box-shadow:0 2px 8px rgba(14,26,43,.05);
 }
-.browse-item { flex-direction: column; cursor: pointer; transition: transform .15s ease; }
-.browse-item:hover { transform: translateY(-1px); box-shadow:0 4px 12px rgba(14,26,43,.08); }
+.browse-item { flex-direction: column; cursor: pointer; transition: transform .18s var(--spring); }
+.browse-item:hover { background: var(--bg-2); transform: translateY(-1px); }
 
-.explainer-icon {
-  width:40px; height:40px; border-radius:12px;
-  background:var(--bg-2); display:grid; place-items:center;
-  font-size:18px; flex-shrink:0;
-}
 .et-title, .browse-item-name { font-size:14px; font-weight:600; color:var(--ink); margin-bottom:3px; }
 .et-sub, .browse-item-meta { font-size:12px; color:var(--ink-3); line-height:1.5; }
 
@@ -155,7 +150,6 @@ button {
   box-shadow:0 2px 8px rgba(14,26,43,.05); margin-bottom:10px;
 }
 .policy-card-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-.policy-card-icon { font-size:18px; }
 .policy-card-title { font-size:13px; font-weight:600; color:var(--ink); flex:1; }
 
 .bag-id-card {
@@ -163,11 +157,9 @@ button {
   border-radius:var(--r-md); padding:14px 16px;
   display:flex; align-items:center; gap:12px;
 }
-.bag-id-thumb {
-  width:52px; height:52px; border-radius:12px; background:var(--card);
-  border:1px solid var(--card-b); display:grid; place-items:center;
-  font-size:24px; flex-shrink:0; overflow:hidden;
-}
+.bi-type { font-family:var(--display); font-size:16px; font-style:italic; color:var(--ink); margin-bottom:3px; }
+.bi-dims { font-size:11px; color:var(--ink-3); line-height:1.5; }
+.bc-label { font-size:9px; color:var(--ink-3); letter-spacing:.1em; text-transform:uppercase; }
 
 .action-btn {
   width:100%; padding:16px; border-radius:var(--r-md);
@@ -178,7 +170,8 @@ button {
   background:var(--card); border:1px solid var(--card-b); color:var(--ink-2);
   box-shadow:0 2px 8px rgba(14,26,43,.05);
 }
-.action-btn.ghost:hover { background:var(--bg-2); color:var(--ink); }
+.action-btn.ghost:hover { background:var(--bg-2); }
+
 .primary-btn {
   width:100%; padding:17px; border-radius:var(--r-md);
   background:var(--navy); color:#F8F9F9;
@@ -186,6 +179,8 @@ button {
   transition:background .2s, transform .2s var(--spring), box-shadow .2s;
   box-shadow:0 8px 28px rgba(14,26,43,.18);
 }
+.primary-btn:hover  { transform:translateY(-1px); box-shadow:0 12px 36px rgba(14,26,43,.24); }
+.primary-btn:active { transform:scale(.99); }
 
 /* ── SETLIST ACCORDION & LIST (Required for JS mapping) ── */
 .info-panel--empty .info-empty { display: flex; }
@@ -201,30 +196,35 @@ button {
   display: grid; grid-template-columns: 24px 1fr 24px; gap: 12px;
   align-items: center; cursor: pointer; text-align: left;
   font-family: var(--body); -webkit-tap-highlight-color: transparent;
+  transition: opacity .18s;
 }
+.song-row-header:hover { opacity: 0.7; }
+
 .song-index {
-  font-size: 11px; font-weight: 600; color: var(--ink-3); text-align: left;
+  font-size: 11px; font-weight: 500; color: var(--ink-3); text-align: left;
 }
 .song-title {
   font-size: 14px; font-weight: 500; color: var(--ink); line-height: 1.3;
 }
 .song-chevron {
-  text-align: right; font-size: 14px; font-weight: 600; color: var(--ink-3);
+  text-align: right; font-size: 14px; font-weight: 500; color: var(--ink-3);
 }
 
 .song-meta { display: none !important; }
+
 .song-dropdown { display: none; padding: 0 0 16px 36px; }
 .song-dropdown.open { display: block; }
-.song-links { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.song-links { display: flex; flex-direction: column; gap: 8px; }
 
 .song-link-btn {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 10px 14px; border-radius: 999px; border: 1px solid var(--card-b);
-  background: var(--bg-2); font-size: 12px; font-weight: 600; color: var(--ink);
-  box-shadow: 0 2px 8px rgba(14,26,43,.05); transition: all .15s ease;
+  background: var(--bg-2); font-size: 11px; font-weight: 600; color: var(--ink);
+  letter-spacing: .02em; transition: all .18s;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none;
 }
-.song-link-btn:hover { background: var(--bg-3); border-color: var(--card-b2); }
-.song-link-btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+.song-link-btn:hover { background: var(--card); border-color: var(--card-b2); }
+.song-link-btn[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
 /* ── MODAL ── */
 .modal[hidden] { display: none; }
@@ -232,12 +232,10 @@ button {
 .modal-backdrop { position: absolute; inset: 0; background: rgba(14,26,43,.4); backdrop-filter: blur(4px); }
 .modal-card {
   position: relative; width: calc(100% - 40px); max-width: 380px;
-  background: var(--bg); border: 1px solid var(--card-b); border-radius: var(--r-lg);
-  padding: 24px; box-shadow: 0 16px 40px rgba(14,26,43,.2);
+  background: var(--bg); border: 1px solid var(--card-b); border-radius: var(--r-md);
+  padding: 24px 20px; box-shadow: 0 16px 40px rgba(14,26,43,.2);
 }
-.modal-title { font-family: var(--display); font-size: 24px; font-weight: 700; color: var(--ink); margin-bottom: 12px; line-height: 1.1; }
-.modal-body { font-size: 13px; color: var(--ink-3); line-height: 1.6; margin-bottom: 24px; }
-.bullets { padding-left: 20px; margin: 0; }
+.bullets { padding-left: 16px; margin: 0; }
 .bullets li { margin-bottom: 6px; }
 
 /* ── UTILS ── */
